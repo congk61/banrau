@@ -1,0 +1,1467 @@
+<!DOCTYPE html><html lang="vi"><head><meta name="x-poe-datastore-behavior" content="local_only"><meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Bán Hàng Chợ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #22c55e;
+            --primary-dark: #16a34a;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Header */
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .search-box {
+            margin-top: 12px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            background: rgba(255,255,255,0.95);
+        }
+
+        .search-box::before {
+            content: "🔍";
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 108px;
+            z-index: 99;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: #f0fdf4;
+        }
+
+        .tab .badge {
+            background: var(--danger);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-left: 6px;
+        }
+
+        /* Product List */
+        .product-list {
+            padding: 12px;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            gap: 12px;
+        }
+
+        .product-item.out-of-stock {
+            opacity: 0.5;
+        }
+
+        .product-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+
+        .product-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .product-name {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-price {
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .product-status {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        .product-status.out {
+            color: var(--danger);
+        }
+
+        .btn-sell {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .btn-sell:active {
+            transform: scale(0.95);
+            background: var(--primary-dark);
+        }
+
+        .btn-sell:disabled {
+            background: #cbd5e1;
+            cursor: not-allowed;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 200;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--card);
+            width: 100%;
+            max-width: 500px;
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: #f1f5f9;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Sell Method Selection */
+        .sell-method {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .method-btn {
+            padding: 20px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            background: var(--card);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .method-btn.active {
+            border-color: var(--primary);
+            background: #f0fdf4;
+        }
+
+        .method-btn .icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .method-btn .label {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Input Section */
+        .input-section {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .unit-select {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .unit-btn {
+            padding: 10px 18px;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: var(--card);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .unit-btn.active {
+            border-color: var(--primary);
+            background: var(--primary);
+            color: white;
+        }
+
+        .number-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .quick-amounts {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        .quick-btn {
+            padding: 10px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #f8fafc;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .quick-btn:active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Result Display */
+        .result-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .result-label {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .result-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .result-sub {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-top: 8px;
+        }
+
+        .btn-add-cart {
+            width: 100%;
+            padding: 18px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-add-cart:active {
+            transform: scale(0.98);
+            background: var(--primary-dark);
+        }
+
+        /* Cart */
+        .cart-list {
+            padding: 12px;
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-desc {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .cart-item-price {
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-right: 12px;
+        }
+
+        .btn-remove {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: #fef2f2;
+            color: var(--danger);
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-cart .icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        /* Bottom Bar */
+        .bottom-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+        }
+
+        .total-section {
+            flex: 1;
+        }
+
+        .total-label {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .total-value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .btn-checkout {
+            padding: 16px 32px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+        }
+
+        .btn-checkout:disabled {
+            background: #cbd5e1;
+        }
+
+        .btn-clear {
+            padding: 16px;
+            background: #fef2f2;
+            color: var(--danger);
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        /* Order History */
+        .order-item {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-time {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .order-total {
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .order-detail {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* Settings */
+        .settings-section {
+            padding: 16px;
+        }
+
+        .setting-item {
+            background: var(--card);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .setting-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .setting-desc {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-bottom: 12px;
+        }
+
+        .btn-sync {
+            padding: 12px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .sync-status.online {
+            color: var(--primary);
+        }
+
+        .sync-status.offline {
+            color: var(--warning);
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1e293b;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            z-index: 300;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        .toast.hide {
+            animation: fadeOutDown 0.3s ease forwards;
+        }
+
+        @keyframes fadeOutDown {
+            to {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+        }
+
+        /* Navigation */
+        .nav-bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            display: flex;
+            z-index: 150;
+        }
+
+        .nav-item {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item .nav-icon {
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        .nav-item .nav-label {
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .main-content {
+            padding-bottom: 70px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <h1>🥬 Bán Hàng Chợ</h1>
+            <div class="search-box" id="searchBox">
+                <input type="text" id="searchInput" placeholder="Tìm sản phẩm...">
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Products Page -->
+            <div id="productsPage">
+                <div class="product-list" id="productList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Đang tải sản phẩm...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cart Page -->
+            <div id="cartPage" class="hidden">
+                <div class="cart-list" id="cartList"></div>
+                <div class="bottom-bar" id="cartBottomBar">
+                    <button class="btn-clear" id="btnClearCart">🗑️</button>
+                    <div class="total-section">
+                        <div class="total-label">Tổng tiền</div>
+                        <div class="total-value" id="cartTotal">0đ</div>
+                    </div>
+                    <button class="btn-checkout" id="btnCheckout">Thanh toán</button>
+                </div>
+            </div>
+
+            <!-- Orders Page -->
+            <div id="ordersPage" class="hidden">
+                <div id="orderList"></div>
+            </div>
+
+            <!-- Settings Page -->
+            <div id="settingsPage" class="hidden">
+                <div class="settings-section">
+                    <div class="setting-item">
+                        <div class="setting-title">📊 Google Sheet</div>
+                        <div class="setting-desc">Nhập URL Google Sheet để đồng bộ dữ liệu sản phẩm</div>
+                        <input type="text" id="sheetUrl" placeholder="Nhập URL Google Sheet..." style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px;">
+                        <button class="btn-sync" id="btnSync">🔄 Đồng bộ dữ liệu</button>
+                        <div class="sync-status" id="syncStatus">
+                            <span>⏱️</span>
+                            <span>Chưa đồng bộ</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-title">💾 Dữ liệu mẫu</div>
+                        <div class="setting-desc">Tải dữ liệu mẫu để thử nghiệm ứng dụng</div>
+                        <button class="btn-sync" id="btnLoadSample">📦 Tải dữ liệu mẫu</button>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-title">🌐 Trạng thái kết nối</div>
+                        <div class="sync-status" id="connectionStatus">
+                            <span>🟢</span>
+                            <span>Đang online</span>
+                        </div>
+                    </div>
+
+                    <div class="setting-item">
+                        <div class="setting-title">🗑️ Xóa dữ liệu</div>
+                        <div class="setting-desc">Xóa toàn bộ dữ liệu đã lưu trên thiết bị</div>
+                        <button class="btn-sync" style="background: var(--danger);" id="btnClearData">Xóa dữ liệu</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="nav-bottom">
+            <div class="nav-item active" data-page="products">
+                <div class="nav-icon">🏠</div>
+                <div class="nav-label">Sản phẩm</div>
+            </div>
+            <div class="nav-item" data-page="cart">
+                <div class="nav-icon">🛒</div>
+                <div class="nav-label">Giỏ hàng <span id="cartBadge"></span></div>
+            </div>
+            <div class="nav-item" data-page="orders">
+                <div class="nav-icon">📋</div>
+                <div class="nav-label">Đơn hàng</div>
+            </div>
+            <div class="nav-item" data-page="settings">
+                <div class="nav-icon">⚙️</div>
+                <div class="nav-label">Cài đặt</div>
+            </div>
+        </nav>
+
+        <!-- Sell Modal -->
+        <div class="modal-overlay" id="sellModal">
+            <div class="modal">
+                <div class="modal-header">
+                    <h2 class="modal-title" id="modalProductName">Sản phẩm</h2>
+                    <button class="modal-close" id="btnCloseModal">✕</button>
+                </div>
+
+                <!-- Step 1: Choose Method -->
+                <div id="step1">
+                    <p style="color: var(--text-light); margin-bottom: 16px; text-align: center;">Chọn cách bán:</p>
+                    <div class="sell-method">
+                        <div class="method-btn" data-method="quantity">
+                            <div class="icon">📦</div>
+                            <div class="label">Theo số lượng</div>
+                        </div>
+                        <div class="method-btn" data-method="money">
+                            <div class="icon">💵</div>
+                            <div class="label">Theo số tiền</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Input -->
+                <div id="step2" class="hidden">
+                    <div class="input-section">
+                        <label class="input-label">Chọn đơn vị:</label>
+                        <div class="unit-select" id="unitSelect"></div>
+                    </div>
+
+                    <!-- Quantity Input -->
+                    <div id="quantityInput" class="input-section">
+                        <label class="input-label">Nhập số lượng:</label>
+                        <input type="number" class="number-input" id="inputQuantity" placeholder="0" step="0.1">
+                        <div class="quick-amounts">
+                            <button class="quick-btn" data-qty="0.5">+0.5</button>
+                            <button class="quick-btn" data-qty="1">+1</button>
+                            <button class="quick-btn" data-qty="2">+2</button>
+                            <button class="quick-btn" data-qty="5">+5</button>
+                        </div>
+                    </div>
+
+                    <!-- Money Input -->
+                    <div id="moneyInput" class="input-section hidden">
+                        <label class="input-label">Nhập số tiền (đ):</label>
+                        <input type="number" class="number-input" id="inputMoney" placeholder="0" step="1000">
+                        <div class="quick-amounts">
+                            <button class="quick-btn" data-amount="5000">+5k</button>
+                            <button class="quick-btn" data-amount="10000">+10k</button>
+                            <button class="quick-btn" data-amount="20000">+20k</button>
+                            <button class="quick-btn" data-amount="50000">+50k</button>
+                        </div>
+                    </div>
+
+                    <div class="result-box">
+                        <div class="result-label" id="resultLabel">Thành tiền</div>
+                        <div class="result-value" id="resultValue">0đ</div>
+                        <div class="result-sub" id="resultSub"></div>
+                    </div>
+
+                    <button class="btn-add-cart" id="btnAddCart">🛒 Thêm vào giỏ</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============ DATA STORE ============
+        const Store = {
+            products: [],
+            units: [],
+            cart: [],
+            orders: [],
+
+            // Load from localStorage
+            load() {
+                try {
+                    this.products = JSON.parse(localStorage.getItem('products')) || [];
+                    this.units = JSON.parse(localStorage.getItem('units')) || this.getDefaultUnits();
+                    this.cart = JSON.parse(localStorage.getItem('cart')) || [];
+                    this.orders = JSON.parse(localStorage.getItem('orders')) || [];
+                } catch (e) {
+                    console.error('Load error:', e);
+                }
+            },
+
+            save() {
+                localStorage.setItem('products', JSON.stringify(this.products));
+                localStorage.setItem('units', JSON.stringify(this.units));
+                localStorage.setItem('cart', JSON.stringify(this.cart));
+                localStorage.setItem('orders', JSON.stringify(this.orders));
+            },
+
+            getDefaultUnits() {
+                return [
+                    { id: 'kg', ten: 'kg', heSoKg: 1 },
+                    { id: 'lang', ten: 'lạng', heSoKg: 0.1 },
+                    { id: 'bo', ten: 'bó', heSoKg: 0.3 },
+                    { id: 'goi', ten: 'gói', heSoKg: 0.5 },
+                    { id: 'qua', ten: 'quả', heSoKg: 0.2 }
+                ];
+            },
+
+            getSampleProducts() {
+                return [
+                    { id: 1, ten: 'Rau muống', giaKg: 15000, ghiChu: 'Còn hàng', anh: '🥬' },
+                    { id: 2, ten: 'Rau cải', giaKg: 18000, ghiChu: 'Còn hàng', anh: '🥗' },
+                    { id: 3, ten: 'Cà chua', giaKg: 25000, ghiChu: 'Còn hàng', anh: '🍅' },
+                    { id: 4, ten: 'Khoai tây', giaKg: 20000, ghiChu: 'Còn hàng', anh: '🥔' },
+                    { id: 5, ten: 'Cà rốt', giaKg: 22000, ghiChu: 'Còn hàng', anh: '🥕' },
+                    { id: 6, ten: 'Hành tây', giaKg: 18000, ghiChu: 'Còn hàng', anh: '🧅' },
+                    { id: 7, ten: 'Tỏi', giaKg: 80000, ghiChu: 'Còn hàng', anh: '🧄' },
+                    { id: 8, ten: 'Ớt', giaKg: 40000, ghiChu: 'Còn hàng', anh: '🌶️' },
+                    { id: 9, ten: 'Bắp cải', giaKg: 12000, ghiChu: 'Còn hàng', anh: '🥬' },
+                    { id: 10, ten: 'Dưa leo', giaKg: 15000, ghiChu: 'Còn hàng', anh: '🥒' },
+                    { id: 11, ten: 'Bí đao', giaKg: 10000, ghiChu: 'Còn hàng', anh: '🎃' },
+                    { id: 12, ten: 'Đậu que', giaKg: 25000, ghiChu: 'Còn hàng', anh: '🫛' },
+                    { id: 13, ten: 'Nấm rơm', giaKg: 60000, ghiChu: 'Còn hàng', anh: '🍄' },
+                    { id: 14, ten: 'Gừng', giaKg: 50000, ghiChu: 'Còn hàng', anh: '🫚' },
+                    { id: 15, ten: 'Chanh', giaKg: 30000, ghiChu: 'Còn hàng', anh: '🍋' },
+                    { id: 16, ten: 'Xà lách', giaKg: 20000, ghiChu: 'Còn hàng', anh: '🥬' },
+                    { id: 17, ten: 'Mướp', giaKg: 12000, ghiChu: 'Còn hàng', anh: '🥒' },
+                    { id: 18, ten: 'Su su', giaKg: 15000, ghiChu: 'Còn hàng', anh: '🥒' },
+                    { id: 19, ten: 'Thịt heo', giaKg: 120000, ghiChu: 'Còn hàng', anh: '🥩' },
+                    { id: 20, ten: 'Thịt bò', giaKg: 280000, ghiChu: 'Còn hàng', anh: '🥩' },
+                    { id: 21, ten: 'Cá thu', giaKg: 150000, ghiChu: 'Còn hàng', anh: '🐟' },
+                    { id: 22, ten: 'Tôm sú', giaKg: 250000, ghiChu: 'Còn hàng', anh: '🦐' },
+                    { id: 23, ten: 'Trứng gà', giaKg: 35000, ghiChu: 'Còn hàng', anh: '🥚' },
+                    { id: 24, ten: 'Đậu phụ', giaKg: 25000, ghiChu: 'Còn hàng', anh: '🧈' }
+                ];
+            },
+
+            addToCart(item) {
+                this.cart.push({
+                    ...item,
+                    cartId: Date.now()
+                });
+                this.save();
+            },
+
+            removeFromCart(cartId) {
+                this.cart = this.cart.filter(item => item.cartId !== cartId);
+                this.save();
+            },
+
+            clearCart() {
+                this.cart = [];
+                this.save();
+            },
+
+            getCartTotal() {
+                return this.cart.reduce((sum, item) => sum + item.thanhTien, 0);
+            },
+
+            checkout() {
+                if (this.cart.length === 0) return null;
+
+                const order = {
+                    id: Date.now(),
+                    thoiGian: new Date().toLocaleString('vi-VN'),
+                    tongTien: this.getCartTotal(),
+                    chiTiet: this.cart.map(item => ({
+                        ten: item.ten,
+                        moTa: item.moTa,
+                        thanhTien: item.thanhTien
+                    }))
+                };
+
+                this.orders.unshift(order);
+                this.cart = [];
+                this.save();
+                return order;
+            }
+        };
+
+        // ============ UI CONTROLLER ============
+        const UI = {
+            currentPage: 'products',
+            currentProduct: null,
+            currentMethod: null,
+            currentUnit: null,
+
+            init() {
+                this.bindEvents();
+                this.renderProducts();
+                this.updateCartBadge();
+                this.updateConnectionStatus();
+
+                // Check online status
+                window.addEventListener('online', () => this.updateConnectionStatus());
+                window.addEventListener('offline', () => this.updateConnectionStatus());
+            },
+
+            bindEvents() {
+                // Navigation
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        this.switchPage(item.dataset.page);
+                    });
+                });
+
+                // Search
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    this.filterProducts(e.target.value);
+                });
+
+                // Modal close
+                document.getElementById('btnCloseModal').addEventListener('click', () => {
+                    this.closeModal();
+                });
+
+                document.getElementById('sellModal').addEventListener('click', (e) => {
+                    if (e.target.id === 'sellModal') this.closeModal();
+                });
+
+                // Sell method selection
+                document.querySelectorAll('.method-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        this.selectMethod(btn.dataset.method);
+                    });
+                });
+
+                // Quantity input
+                document.getElementById('inputQuantity').addEventListener('input', () => {
+                    this.calculateResult();
+                });
+
+                // Money input
+                document.getElementById('inputMoney').addEventListener('input', () => {
+                    this.calculateResult();
+                });
+
+                // Quick quantity buttons
+                document.querySelectorAll('[data-qty]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const input = document.getElementById('inputQuantity');
+                        input.value = (parseFloat(input.value) || 0) + parseFloat(btn.dataset.qty);
+                        this.calculateResult();
+                    });
+                });
+
+                // Quick amount buttons
+                document.querySelectorAll('[data-amount]').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const input = document.getElementById('inputMoney');
+                        input.value = (parseFloat(input.value) || 0) + parseFloat(btn.dataset.amount);
+                        this.calculateResult();
+                    });
+                });
+
+                // Add to cart
+                document.getElementById('btnAddCart').addEventListener('click', () => {
+                    this.addToCart();
+                });
+
+                // Cart actions
+                document.getElementById('btnClearCart').addEventListener('click', () => {
+                    if (confirm('Xóa toàn bộ giỏ hàng?')) {
+                        Store.clearCart();
+                        this.renderCart();
+                        this.updateCartBadge();
+                        this.showToast('Đã xóa giỏ hàng');
+                    }
+                });
+
+                document.getElementById('btnCheckout').addEventListener('click', () => {
+                    this.checkout();
+                });
+
+                // Settings
+                document.getElementById('btnSync').addEventListener('click', () => {
+                    this.syncFromSheet();
+                });
+
+                document.getElementById('btnLoadSample').addEventListener('click', () => {
+                    Store.products = Store.getSampleProducts();
+                    Store.units = Store.getDefaultUnits();
+                    Store.save();
+                    this.renderProducts();
+                    this.showToast('Đã tải dữ liệu mẫu');
+                });
+
+                document.getElementById('btnClearData').addEventListener('click', () => {
+                    if (confirm('Xóa toàn bộ dữ liệu?')) {
+                        localStorage.clear();
+                        Store.load();
+                        this.renderProducts();
+                        this.renderCart();
+                        this.renderOrders();
+                        this.showToast('Đã xóa dữ liệu');
+                    }
+                });
+            },
+
+            switchPage(page) {
+                this.currentPage = page;
+
+                // Update nav
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.toggle('active', item.dataset.page === page);
+                });
+
+                // Show/hide pages
+                document.getElementById('productsPage').classList.toggle('hidden', page !== 'products');
+                document.getElementById('cartPage').classList.toggle('hidden', page !== 'cart');
+                document.getElementById('ordersPage').classList.toggle('hidden', page !== 'orders');
+                document.getElementById('settingsPage').classList.toggle('hidden', page !== 'settings');
+
+                // Show/hide search
+                document.getElementById('searchBox').classList.toggle('hidden', page !== 'products');
+
+                // Show/hide cart bottom bar
+                document.getElementById('cartBottomBar').classList.toggle('hidden', page !== 'cart');
+
+                // Render content
+                if (page === 'cart') this.renderCart();
+                if (page === 'orders') this.renderOrders();
+            },
+
+            renderProducts(products = Store.products) {
+                const container = document.getElementById('productList');
+
+                if (products.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-cart">
+                            <div class="icon">📦</div>
+                            <p>Chưa có sản phẩm</p>
+                            <p style="margin-top: 8px; font-size: 13px;">Vào Cài đặt để tải dữ liệu mẫu hoặc đồng bộ từ Google Sheet</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = products.map(product => {
+                    const isOutOfStock = product.ghiChu?.toLowerCase().includes('hết');
+                    return `
+                        <div class="product-item ${isOutOfStock ? 'out-of-stock' : ''}" data-id="${product.id}">
+                            <div class="product-img">${product.anh || '📦'}</div>
+                            <div class="product-info">
+                                <div class="product-name">${product.ten}</div>
+                                <div class="product-price">${this.formatMoney(product.giaKg)}/kg</div>
+                                <div class="product-status ${isOutOfStock ? 'out' : ''}">${product.ghiChu || ''}</div>
+                            </div>
+                            <button class="btn-sell" ${isOutOfStock ? 'disabled' : ''} onclick="UI.openSellModal(${product.id})">BÁN</button>
+                        </div>
+                    `;
+                }).join('');
+            },
+
+            filterProducts(keyword) {
+                const filtered = Store.products.filter(p => 
+                    p.ten.toLowerCase().includes(keyword.toLowerCase())
+                );
+                this.renderProducts(filtered);
+            },
+
+            openSellModal(productId) {
+                this.currentProduct = Store.products.find(p => p.id === productId);
+                if (!this.currentProduct) return;
+
+                document.getElementById('modalProductName').textContent = this.currentProduct.ten;
+                document.getElementById('step1').classList.remove('hidden');
+                document.getElementById('step2').classList.add('hidden');
+                document.getElementById('sellModal').classList.add('show');
+
+                // Reset
+                this.currentMethod = null;
+                this.currentUnit = null;
+                document.querySelectorAll('.method-btn').forEach(btn => btn.classList.remove('active'));
+            },
+
+            closeModal() {
+                document.getElementById('sellModal').classList.remove('show');
+                this.currentProduct = null;
+                this.currentMethod = null;
+                this.currentUnit = null;
+            },
+
+            selectMethod(method) {
+                this.currentMethod = method;
+
+                // Update UI
+                document.querySelectorAll('.method-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.method === method);
+                });
+
+                // Show step 2
+                document.getElementById('step1').classList.add('hidden');
+                document.getElementById('step2').classList.remove('hidden');
+
+                // Render units
+                this.renderUnits();
+
+                // Show correct input
+                document.getElementById('quantityInput').classList.toggle('hidden', method !== 'quantity');
+                document.getElementById('moneyInput').classList.toggle('hidden', method !== 'money');
+
+                // Reset inputs
+                document.getElementById('inputQuantity').value = '';
+                document.getElementById('inputMoney').value = '';
+
+                // Update labels
+                if (method === 'quantity') {
+                    document.getElementById('resultLabel').textContent = 'Thành tiền';
+                } else {
+                    document.getElementById('resultLabel').textContent = 'Số lượng tương ứng';
+                }
+
+                document.getElementById('resultValue').textContent = '0đ';
+                document.getElementById('resultSub').textContent = '';
+            },
+
+            renderUnits() {
+                const container = document.getElementById('unitSelect');
+                container.innerHTML = Store.units.map((unit, index) => `
+                    <button class="unit-btn ${index === 0 ? 'active' : ''}" data-unit="${unit.id}" onclick="UI.selectUnit('${unit.id}')">
+                        ${unit.ten}
+                    </button>
+                `).join('');
+
+                // Select first unit by default
+                this.currentUnit = Store.units[0];
+            },
+
+            selectUnit(unitId) {
+                this.currentUnit = Store.units.find(u => u.id === unitId);
+                document.querySelectorAll('.unit-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.unit === unitId);
+                });
+                this.calculateResult();
+            },
+
+            calculateResult() {
+                if (!this.currentProduct || !this.currentUnit) return;
+
+                const giaKg = this.currentProduct.giaKg;
+                const heSoKg = this.currentUnit.heSoKg;
+
+                if (this.currentMethod === 'quantity') {
+                    const soLuong = parseFloat(document.getElementById('inputQuantity').value) || 0;
+                    const thanhTien = giaKg * heSoKg * soLuong;
+
+                    document.getElementById('resultValue').textContent = this.formatMoney(thanhTien);
+                    document.getElementById('resultSub').textContent = `${soLuong} ${this.currentUnit.ten} × ${this.formatMoney(giaKg * heSoKg)}`;
+                } else {
+                    const soTien = parseFloat(document.getElementById('inputMoney').value) || 0;
+                    const soLuongQuyDoi = soTien / (giaKg * heSoKg);
+
+                    document.getElementById('resultValue').textContent = `≈ ${soLuongQuyDoi.toFixed(2)} ${this.currentUnit.ten}`;
+                    document.getElementById('resultSub').textContent = `= ${this.formatMoney(soTien)}`;
+                }
+            },
+
+            addToCart() {
+                if (!this.currentProduct || !this.currentUnit) return;
+
+                let soLuong, thanhTien, moTa;
+                const giaKg = this.currentProduct.giaKg;
+                const heSoKg = this.currentUnit.heSoKg;
+
+                if (this.currentMethod === 'quantity') {
+                    soLuong = parseFloat(document.getElementById('inputQuantity').value) || 0;
+                    if (soLuong <= 0) {
+                        this.showToast('Vui lòng nhập số lượng');
+                        return;
+                    }
+                    thanhTien = giaKg * heSoKg * soLuong;
+                    moTa = `${soLuong} ${this.currentUnit.ten}`;
+                } else {
+                    const soTien = parseFloat(document.getElementById('inputMoney').value) || 0;
+                    if (soTien <= 0) {
+                        this.showToast('Vui lòng nhập số tiền');
+                        return;
+                    }
+                    soLuong = soTien / (giaKg * heSoKg);
+                    thanhTien = soTien;
+                    moTa = `≈${soLuong.toFixed(2)} ${this.currentUnit.ten}`;
+                }
+
+                Store.addToCart({
+                    ten: this.currentProduct.ten,
+                    giaKg: giaKg,
+                    cachBan: this.currentMethod === 'quantity' ? 'THEO_SO_LUONG' : 'THEO_TIEN',
+                    donViChon: this.currentUnit.ten,
+                    heSoKg: heSoKg,
+                    soLuong: soLuong,
+                    thanhTien: Math.round(thanhTien),
+                    moTa: moTa
+                });
+
+                this.closeModal();
+                this.updateCartBadge();
+                this.showToast(`Đã thêm ${this.currentProduct.ten} vào giỏ`);
+            },
+
+            renderCart() {
+                const container = document.getElementById('cartList');
+
+                if (Store.cart.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-cart">
+                            <div class="icon">🛒</div>
+                            <p>Giỏ hàng trống</p>
+                        </div>
+                    `;
+                    document.getElementById('cartTotal').textContent = '0đ';
+                    document.getElementById('btnCheckout').disabled = true;
+                    return;
+                }
+
+                container.innerHTML = Store.cart.map(item => `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.ten}</div>
+                            <div class="cart-item-desc">${item.moTa}</div>
+                        </div>
+                        <div class="cart-item-price">${this.formatMoney(item.thanhTien)}</div>
+                        <button class="btn-remove" onclick="UI.removeFromCart(${item.cartId})">✕</button>
+                    </div>
+                `).join('');
+
+                document.getElementById('cartTotal').textContent = this.formatMoney(Store.getCartTotal());
+                document.getElementById('btnCheckout').disabled = false;
+            },
+
+            removeFromCart(cartId) {
+                Store.removeFromCart(cartId);
+                this.renderCart();
+                this.updateCartBadge();
+            },
+
+            updateCartBadge() {
+                const badge = document.getElementById('cartBadge');
+                const count = Store.cart.length;
+                badge.textContent = count > 0 ? `(${count})` : '';
+            },
+
+            checkout() {
+                const order = Store.checkout();
+                if (order) {
+                    this.renderCart();
+                    this.updateCartBadge();
+                    this.showToast(`Đã thanh toán ${this.formatMoney(order.tongTien)}`);
+                    this.switchPage('orders');
+                }
+            },
+
+            renderOrders() {
+                const container = document.getElementById('orderList');
+
+                if (Store.orders.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-cart">
+                            <div class="icon">📋</div>
+                            <p>Chưa có đơn hàng</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = Store.orders.map(order => `
+                    <div class="order-item">
+                        <div class="order-header">
+                            <span class="order-time">${order.thoiGian}</span>
+                            <span class="order-total">${this.formatMoney(order.tongTien)}</span>
+                        </div>
+                        <div class="order-detail">
+                            ${order.chiTiet.map(item => `${item.ten} (${item.moTa}): ${this.formatMoney(item.thanhTien)}`).join('<br>')}
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            async syncFromSheet() {
+                const url = document.getElementById('sheetUrl').value.trim();
+                if (!url) {
+                    this.showToast('Vui lòng nhập URL Google Sheet');
+                    return;
+                }
+
+                try {
+                    // Extract sheet ID from URL
+                    const match = url.match(/\/d\/([a-zA-Z0-9-_]+)/);
+                    if (!match) {
+                        this.showToast('URL không hợp lệ');
+                        return;
+                    }
+
+                    const sheetId = match[1];
+                    const apiUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=SanPham`;
+
+                    document.getElementById('syncStatus').innerHTML = '<span>⏳</span><span>Đang đồng bộ...</span>';
+
+                    const response = await fetch(apiUrl);
+                    const text = await response.text();
+
+                    // Parse Google Sheets JSON response
+                    const json = JSON.parse(text.substring(47, text.length - 2));
+                    const rows = json.table.rows;
+                    const cols = json.table.cols;
+
+                    // Convert to products array
+                    const products = rows.slice(1).map((row, index) => ({
+                        id: index + 1,
+                        ten: row.c[1]?.v || '',
+                        giaKg: row.c[2]?.v || 0,
+                        ghiChu: row.c[3]?.v || '',
+                        anh: row.c[4]?.v || '📦'
+                    })).filter(p => p.ten);
+
+                    Store.products = products;
+                    Store.save();
+                    this.renderProducts();
+
+                    document.getElementById('syncStatus').innerHTML = '<span>✅</span><span>Đã đồng bộ thành công</span>';
+                    this.showToast(`Đã tải ${products.length} sản phẩm`);
+
+                } catch (error) {
+                    console.error('Sync error:', error);
+                    document.getElementById('syncStatus').innerHTML = '<span>❌</span><span>Lỗi đồng bộ</span>';
+                    this.showToast('Lỗi kết nối. Kiểm tra URL và quyền truy cập.');
+                }
+            },
+
+            updateConnectionStatus() {
+                const status = document.getElementById('connectionStatus');
+                if (navigator.onLine) {
+                    status.innerHTML = '<span>🟢</span><span>Đang online</span>';
+                    status.className = 'sync-status online';
+                } else {
+                    status.innerHTML = '<span>🟡</span><span>Đang offline (dùng dữ liệu đã lưu)</span>';
+                    status.className = 'sync-status offline';
+                }
+            },
+
+            formatMoney(amount) {
+                return new Intl.NumberFormat('vi-VN').format(Math.round(amount)) + 'đ';
+            },
+
+            showToast(message) {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.textContent = message;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.classList.add('hide');
+                    setTimeout(() => toast.remove(), 300);
+                }, 2000);
+            }
+        };
+
+        // ============ INIT ============
+        document.addEventListener('DOMContentLoaded', () => {
+            Store.load();
+            UI.init();
+
+            // Load sample data if empty
+            if (Store.products.length === 0) {
+                Store.products = Store.getSampleProducts();
+                Store.save();
+                UI.renderProducts();
+            }
+        });
+
+        // Register Service Worker for offline support
+        if ('serviceWorker' in navigator) {
+            // Note: Service Worker would need to be in a separate file in production
+            console.log('App ready for offline use (data saved locally)');
+        }
+    </script>
+
+
+</body></html>
