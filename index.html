@@ -947,23 +947,12 @@
                 <h1>🏪 Quản Lý Bán Hàng Pro</h1>
                 <p style="opacity: 0.9; font-size: 14px;">Hệ thống POS hiện đại & thông minh</p>
             </div>
-            <div class="header-stats">
-                <div class="stat-card">
-                    <span class="stat-value" id="today-revenue">0đ</span>
-                    <span class="stat-label">Doanh thu hôm nay</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value" id="total-orders">0</span>
-                    <span class="stat-label">Tổng đơn hàng</span>
-                </div>
-            </div>
         </div>
 
         <div class="tabs">
             <button class="tab active" onclick="switchTab('products', this)">📦 Sản Phẩm</button>
             <button class="tab" onclick="switchTab('cart', this)">🛒 Giỏ Hàng <span id="cart-badge">(0)</span></button>
             <button class="tab" onclick="switchTab('orders', this)">📋 Đơn Hàng</button>
-            <button class="tab" onclick="switchTab('analytics', this)">📊 Thống Kê</button>
             <button class="tab" onclick="switchTab('settings', this)">⚙️ Cài Đặt</button>
         </div>
 
@@ -1026,33 +1015,6 @@
             <div id="orders-pagination" style="margin-top: 12px; text-align: center;"></div>
         </div>
 
-        <div id="analytics" class="tab-content">
-            <h2 style="margin-bottom: 12px;">📊 Thống Kê Kinh Doanh</h2>
-            <div style="margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 8px;">
-                <button class="filter-btn active" id="filter-analytics-today" onclick="setAnalyticsRange('today')">Hôm nay</button>
-                <button class="filter-btn" id="filter-analytics-month" onclick="setAnalyticsRange('month')">Tháng này</button>
-                <button class="filter-btn" id="filter-analytics-all" onclick="setAnalyticsRange('all')">Tất cả</button>
-            </div>
-            <div class="analytics-grid">
-                <div class="analytics-card">
-                    <div class="analytics-label">Tổng Doanh Thu</div>
-                    <div class="analytics-value" id="stat-revenue">0đ</div>
-                </div>
-                <div class="analytics-card">
-                    <div class="analytics-label">Số Đơn Hàng</div>
-                    <div class="analytics-value" id="stat-orders">0</div>
-                </div>
-                <div class="analytics-card">
-                    <div class="analytics-label">Giá Trị TB/Đơn</div>
-                    <div class="analytics-value" id="stat-avg">0đ</div>
-                </div>
-                <div class="analytics-card">
-                    <div class="analytics-label">Sản Phẩm Bán Chạy</div>
-                    <div class="analytics-value" id="stat-top" style="font-size: 18px;">---</div>
-                </div>
-            </div>
-        </div>
-
         <div id="settings" class="tab-content">
             <h3 style="margin-bottom: 15px;">📏 Quản Lý Đơn Vị</h3>
             <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
@@ -1109,12 +1071,10 @@
                 filterProducts(currentFilter);
             }
 
-            // Áp dụng lại trạng thái nút lọc thống kê
-            setAnalyticsRange(analyticsRange);
-
             updateCartUI();
             updateOrdersUI();
             updateUnitsUI();
+            updateAnalytics();
         };
 
         function loadProducts(force = false) {
@@ -1577,66 +1537,17 @@
             if (ordersSection) ordersSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
-        function getAnalyticsFilteredOrders() {
-            const today = new Date();
-            const todayStr = today.toLocaleDateString('vi-VN').trim();
-            const month = today.getMonth() + 1;
-            const year = today.getFullYear();
-
-            if (analyticsRange === 'today') {
-                return orders.filter(o => ((o.date || '').split(',')[0] || '').trim() === todayStr);
-            }
-
-            if (analyticsRange === 'month') {
-                return orders.filter(o => {
-                    const dateStr = (o.date || '').split(',')[0]; // "dd/mm/yyyy"
-                    const parts = dateStr.split('/');
-                    if (parts.length !== 3) return false;
-                    const dMonth = parseInt(parts[1], 10);
-                    const dYear = parseInt(parts[2], 10);
-                    return dMonth === month && dYear === year;
-                });
-            }
-
-            return orders;
-        }
-
         function updateAnalytics() {
-            const filteredOrders = getAnalyticsFilteredOrders();
-            const totalRevenue = filteredOrders.reduce((sum, o) => sum + o.total, 0);
-            const totalOrders = filteredOrders.length;
-            const avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-            
-            const today = new Date().toLocaleDateString('vi-VN').trim();
-            const todayRevenue = orders
-                .filter(o => {
-                    // Parse ngày từ format "15/1/2026, 10:30:45" lấy "15/1/2026"
-                    const orderDate = (o.date || '').split(',')[0].trim();
-                    return orderDate === today;
-                })
-                .reduce((sum, o) => sum + o.total, 0);
-            
+            // Cập nhật cache sắp xếp từ tất cả đơn hàng
             const productSales = {};
-            filteredOrders.forEach(order => {
+            orders.forEach(order => {
                 order.items.forEach(item => {
                     productSales[item.name] = (productSales[item.name] || 0) + item.quantity;
                 });
             });
             
-            const sortedTop = Object.entries(productSales)
-                .sort((a, b) => b[1] - a[1]);
-            const topProduct = sortedTop[0];
-
             // Lưu cache để sắp xếp danh sách sản phẩm theo độ bán chạy
             productSalesCache = productSales;
-            
-            document.getElementById('stat-revenue').textContent = formatMoney(totalRevenue);
-            document.getElementById('stat-orders').textContent = totalOrders;
-            document.getElementById('stat-avg').textContent = formatMoney(avgOrder);
-            document.getElementById('stat-top').textContent = topProduct ? topProduct[0] : '---';
-            
-            document.getElementById('today-revenue').textContent = formatMoney(todayRevenue);
-            document.getElementById('total-orders').textContent = totalOrders;
         }
 
         function updateUnitsUI() {
@@ -1697,17 +1608,6 @@
             updateUnitsUI();
             const settingsSection = document.getElementById('settings');
             if (settingsSection) settingsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-
-        function setAnalyticsRange(range) {
-            analyticsRange = range;
-
-            // Cập nhật trạng thái nút lọc
-            document.getElementById('filter-analytics-today').classList.toggle('active', range === 'today');
-            document.getElementById('filter-analytics-month').classList.toggle('active', range === 'month');
-            document.getElementById('filter-analytics-all').classList.toggle('active', range === 'all');
-
-            updateAnalytics();
         }
 
         function updateUnit(index, field, value) {
@@ -1863,9 +1763,6 @@
                         unit: it && it.unit ? it.unit : 'kg'
                     }))
                 }));
-                
-                // Cập nhật thống kê
-                updateAnalytics();
             } catch (e) {
                 console.error('Storage error:', e);
             }
