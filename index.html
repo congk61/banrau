@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Bán Hàng Chợ Pro</title>
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -461,8 +465,8 @@
             background: white;
             border: 2px solid var(--border);
             border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 15px;
+            padding: 14px;
+            margin-bottom: 12px;
             transition: all 0.3s;
         }
 
@@ -474,33 +478,35 @@
         .cart-item-header {
             display: flex;
             justify-content: space-between;
-            align-items: start;
-            margin-bottom: 12px;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 8px;
         }
 
         .cart-item-name {
-            font-weight: 700;
-            font-size: 17px;
+            font-weight: 600;
+            font-size: 15px;
             color: var(--dark);
         }
 
         .cart-item-price {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--danger);
+            white-space: nowrap;
         }
 
         .cart-item-details {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin: 12px 0;
+            gap: 10px;
+            margin: 8px 0 4px;
         }
 
         .cart-actions {
             display: flex;
             gap: 8px;
-            margin-top: 12px;
+            margin-top: 8px;
         }
 
         .cart-summary {
@@ -508,22 +514,24 @@
             top: 80px;
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 24px;
+            padding: 18px 20px;
             border-radius: 16px;
-            margin-top: 20px;
+            margin-top: 16px;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            font-size: 14px;
         }
 
         .summary-total {
-            font-size: 32px;
+            font-size: 26px;
             font-weight: 700;
-            margin: 15px 0;
+            margin: 12px 0;
             text-align: center;
         }
 
@@ -787,7 +795,9 @@
                 </div>
             </div>
             <button class="btn btn-warning" onclick="loadProducts(true)" style="margin-bottom: 15px;">🔄 Đồng bộ dữ liệu</button>
+            <div id="top-products" style="margin-bottom: 10px;"></div>
             <div id="products-list" class="product-grid"></div>
+            <div id="products-pagination" style="margin-top: 12px; text-align: center;"></div>
         </div>
 
         <div id="cart" class="tab-content">
@@ -819,15 +829,25 @@
         </div>
 
         <div id="orders" class="tab-content">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
                 <h2>Lịch Sử Đơn Hàng</h2>
-                <button class="btn btn-danger" onclick="clearOrders()">🗑️ Xóa Tất Cả</button>
+                <div style="display: flex; flex: 1; gap: 8px; justify-content: flex-end; flex-wrap: wrap;">
+                    <input type="text" id="order-search-input" placeholder="Tìm đơn hàng (mã, sản phẩm...)" 
+                        oninput="searchOrders()" style="flex: 1 1 220px; min-width: 0; padding: 8px 10px; border: 2px solid var(--border); border-radius: 8px;">
+                    <button class="btn btn-danger" onclick="clearOrders()">🗑️ Xóa Tất Cả</button>
+                </div>
             </div>
             <div id="orders-list"></div>
+            <div id="orders-pagination" style="margin-top: 12px; text-align: center;"></div>
         </div>
 
         <div id="analytics" class="tab-content">
-            <h2 style="margin-bottom: 20px;">📊 Thống Kê Kinh Doanh</h2>
+            <h2 style="margin-bottom: 12px;">📊 Thống Kê Kinh Doanh</h2>
+            <div style="margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 8px;">
+                <button class="filter-btn active" id="filter-analytics-today" onclick="setAnalyticsRange('today')">Hôm nay</button>
+                <button class="filter-btn" id="filter-analytics-month" onclick="setAnalyticsRange('month')">Tháng này</button>
+                <button class="filter-btn" id="filter-analytics-all" onclick="setAnalyticsRange('all')">Tất cả</button>
+            </div>
             <div class="analytics-grid">
                 <div class="analytics-card">
                     <div class="analytics-label">Tổng Doanh Thu</div>
@@ -850,11 +870,19 @@
 
         <div id="settings" class="tab-content">
             <h3 style="margin-bottom: 15px;">📏 Quản Lý Đơn Vị</h3>
-            <div id="units-list" style="margin-bottom: 20px;"></div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;">
-                <input type="text" id="new-unit-name" placeholder="Tên đơn vị" style="padding: 10px; border: 2px solid var(--border); border-radius: 8px;">
-                <input type="number" id="new-unit-rate" placeholder="Quy đổi (kg)" step="0.01" style="padding: 10px; border: 2px solid var(--border); border-radius: 8px;">
-                <button class="btn btn-primary" onclick="addUnit()">➕ Thêm</button>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
+                <input type="text" id="unit-search-input" placeholder="Tìm kiếm đơn vị..." 
+                    oninput="searchUnits()" style="flex: 1 1 200px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+            </div>
+            <div id="units-list" style="margin-bottom: 8px;"></div>
+            <div id="units-pagination" style="margin-bottom: 12px; text-align: center;"></div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                <input type="text" id="new-unit-name" placeholder="Tên đơn vị" 
+                    style="flex: 1 1 130px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                <input type="number" id="new-unit-rate" placeholder="Quy đổi (kg)" step="0.01" 
+                    style="flex: 1 1 110px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                <button class="btn btn-primary" onclick="addUnit()" 
+                    style="flex: 0 0 auto; padding: 8px 14px; font-size: 13px;">➕ Thêm</button>
             </div>
         </div>
     </div>
@@ -866,6 +894,18 @@
         let cart = [];
         let orders = [];
         let currentFilter = 'all';
+        let analyticsRange = 'today'; // 'today' | 'month' | 'all'
+        let productSalesCache = {};
+        let currentProductsPage = 1;
+        let currentOrdersPage = 1;
+        let currentUnitsPage = 1;
+        let productSearchTerm = '';
+        let orderSearchTerm = '';
+        let unitSearchTerm = '';
+
+        const PRODUCTS_PER_PAGE = 12;
+        const ORDERS_PER_PAGE = 10;
+        const UNITS_PER_PAGE = 10;
         const DEFAULT_UNITS = [
             { name: 'kg', rate: 1 },
             { name: 'lạng', rate: 0.1 },
@@ -876,11 +916,19 @@
 
         window.onload = function() {
             loadFromStorage();
-            if (products.length === 0) loadProducts(true);
-            else displayProducts();
+
+            if (products.length === 0) {
+                loadProducts(true);
+            } else {
+                // Áp dụng lại bộ lọc sản phẩm đã chọn trước đó
+                filterProducts(currentFilter);
+            }
+
+            // Áp dụng lại trạng thái nút lọc thống kê
+            setAnalyticsRange(analyticsRange);
+
             updateCartUI();
             updateOrdersUI();
-            updateAnalytics();
             updateUnitsUI();
         };
 
@@ -894,7 +942,7 @@
                 .then(data => {
                     products = parseCSV(data);
                     saveToStorage();
-                    displayProducts();
+                    filterProducts(currentFilter);
                     showNotification('✅ Đã tải dữ liệu thành công!');
                 })
                 .catch(err => {
@@ -927,12 +975,14 @@
         }
 
         function searchProducts() {
-            const term = removeVietnameseTones(document.getElementById('search-input').value);
-            displayProducts(term);
+            productSearchTerm = removeVietnameseTones(document.getElementById('search-input').value);
+            currentProductsPage = 1;
+            displayProducts();
         }
 
         function filterProducts(type) {
             currentFilter = type;
+            currentProductsPage = 1;
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.textContent.includes(
                     type === 'all' ? 'Tất cả' : type === 'available' ? 'Còn' : 'Hết'
@@ -941,24 +991,48 @@
             displayProducts();
         }
 
-        function displayProducts(searchTerm = '') {
+        function changeProductsPage(page) {
+            if (page < 1) return;
+            currentProductsPage = page;
+            displayProducts();
+            const productsSection = document.getElementById('products');
+            if (productsSection) productsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function displayProducts() {
             let filtered = products;
             
-            if (searchTerm) {
-                filtered = filtered.filter(p => removeVietnameseTones(p.name).includes(searchTerm));
+            if (productSearchTerm) {
+                filtered = filtered.filter(p => removeVietnameseTones(p.name).includes(productSearchTerm));
             }
             
             if (currentFilter === 'available') filtered = filtered.filter(p => p.available);
             if (currentFilter === 'out') filtered = filtered.filter(p => !p.available);
+
+            // Sắp xếp theo sản phẩm bán chạy (ưu tiên số lượng bán cao)
+            filtered = [...filtered].sort((a, b) => {
+                const sa = productSalesCache[a.name] || 0;
+                const sb = productSalesCache[b.name] || 0;
+                if (sb !== sa) return sb - sa;
+                // Nếu chưa bán, sắp theo tên cho ổn định
+                return a.name.localeCompare(b.name, 'vi');
+            });
             
             const container = document.getElementById('products-list');
+            const paginationEl = document.getElementById('products-pagination');
             
             if (filtered.length === 0) {
                 container.innerHTML = '<div class="empty-state" style="grid-column: 1/-1;"><div class="empty-icon">🔍</div><h3>Không tìm thấy sản phẩm</h3></div>';
+                if (paginationEl) paginationEl.innerHTML = '';
                 return;
             }
+
+            const totalPages = Math.ceil(filtered.length / PRODUCTS_PER_PAGE) || 1;
+            if (currentProductsPage > totalPages) currentProductsPage = totalPages;
+            const start = (currentProductsPage - 1) * PRODUCTS_PER_PAGE;
+            const pageItems = filtered.slice(start, start + PRODUCTS_PER_PAGE);
             
-            container.innerHTML = filtered.map(p => `
+            container.innerHTML = pageItems.map(p => `
                 <div class="product-card ${!p.available ? 'out-of-stock' : ''}">
                     <div class="product-content">
                         <div class="product-header">
@@ -1003,6 +1077,16 @@
                     </div>
                 </div>
             `).join('');
+
+            if (paginationEl) {
+                paginationEl.innerHTML = totalPages > 1
+                    ? `
+                        <button class="filter-btn" onclick="changeProductsPage(${currentProductsPage - 1})" ${currentProductsPage === 1 ? 'disabled' : ''}>&laquo;</button>
+                        <span style="margin: 0 8px; font-size: 13px;">Trang ${currentProductsPage}/${totalPages}</span>
+                        <button class="filter-btn" onclick="changeProductsPage(${currentProductsPage + 1})" ${currentProductsPage === totalPages ? 'disabled' : ''}>&raquo;</button>
+                    `
+                    : '';
+            }
         }
 
         function selectUnit(id, unitName) {
@@ -1202,13 +1286,31 @@
 
         function updateOrdersUI() {
             const container = document.getElementById('orders-list');
-            
-            if (orders.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><h3>Chưa có đơn hàng</h3></div>';
-                return;
+            const paginationEl = document.getElementById('orders-pagination');
+
+            let filtered = orders;
+            if (orderSearchTerm) {
+                const term = removeVietnameseTones(orderSearchTerm);
+                filtered = orders.filter(order => {
+                    const idMatch = String(order.id).includes(orderSearchTerm);
+                    const itemsText = order.items.map(it => it.name).join(' ');
+                    const itemsMatch = removeVietnameseTones(itemsText).includes(term);
+                    return idMatch || itemsMatch;
+                });
             }
             
-            container.innerHTML = orders.map((order, i) => `
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><h3>Chưa có đơn hàng</h3></div>';
+                if (paginationEl) paginationEl.innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(filtered.length / ORDERS_PER_PAGE) || 1;
+            if (currentOrdersPage > totalPages) currentOrdersPage = totalPages;
+            const start = (currentOrdersPage - 1) * ORDERS_PER_PAGE;
+            const pageItems = filtered.slice(start, start + ORDERS_PER_PAGE);
+            
+            container.innerHTML = pageItems.map((order, i) => `
                 <div class="order-card">
                     <div class="order-header">
                         <div>
@@ -1225,12 +1327,22 @@
                         `).join('')}
                     </div>
                     <div style="margin-top: 12px; text-align: right;">
-                        <button class="btn btn-danger" onclick="deleteOrder(${i})" style="padding: 8px 16px; font-size: 13px;">
+                        <button class="btn btn-danger" onclick="deleteOrder(${(start + i)})" style="padding: 8px 16px; font-size: 13px;">
                             🗑️ Xóa
                         </button>
                     </div>
                 </div>
             `).join('');
+
+            if (paginationEl) {
+                paginationEl.innerHTML = totalPages > 1
+                    ? `
+                        <button class="filter-btn" onclick="changeOrdersPage(${currentOrdersPage - 1})" ${currentOrdersPage === 1 ? 'disabled' : ''}>&laquo;</button>
+                        <span style="margin: 0 8px; font-size: 13px;">Trang ${currentOrdersPage}/${totalPages}</span>
+                        <button class="filter-btn" onclick="changeOrdersPage(${currentOrdersPage + 1})" ${currentOrdersPage === totalPages ? 'disabled' : ''}>&raquo;</button>
+                    `
+                    : '';
+            }
         }
 
         function deleteOrder(index) {
@@ -1254,25 +1366,68 @@
             }
         }
 
+        function searchOrders() {
+            orderSearchTerm = document.getElementById('order-search-input').value.trim();
+            currentOrdersPage = 1;
+            updateOrdersUI();
+        }
+
+        function changeOrdersPage(page) {
+            if (page < 1) return;
+            currentOrdersPage = page;
+            updateOrdersUI();
+            const ordersSection = document.getElementById('orders');
+            if (ordersSection) ordersSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function getAnalyticsFilteredOrders() {
+            const today = new Date();
+            const todayStr = today.toLocaleDateString('vi-VN').trim();
+            const month = today.getMonth() + 1;
+            const year = today.getFullYear();
+
+            if (analyticsRange === 'today') {
+                return orders.filter(o => ((o.date || '').split(',')[0] || '').trim() === todayStr);
+            }
+
+            if (analyticsRange === 'month') {
+                return orders.filter(o => {
+                    const dateStr = (o.date || '').split(',')[0]; // "dd/mm/yyyy"
+                    const parts = dateStr.split('/');
+                    if (parts.length !== 3) return false;
+                    const dMonth = parseInt(parts[1], 10);
+                    const dYear = parseInt(parts[2], 10);
+                    return dMonth === month && dYear === year;
+                });
+            }
+
+            return orders;
+        }
+
         function updateAnalytics() {
-            const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
-            const totalOrders = orders.length;
+            const filteredOrders = getAnalyticsFilteredOrders();
+            const totalRevenue = filteredOrders.reduce((sum, o) => sum + o.total, 0);
+            const totalOrders = filteredOrders.length;
             const avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0;
             
-            const today = new Date().toLocaleDateString('vi-VN');
+            const today = new Date().toLocaleDateString('vi-VN').trim();
             const todayRevenue = orders
-                .filter(o => o.date.split(',')[0] === today)
+                .filter(o => ((o.date || '').split(',')[0] || '').trim() === today)
                 .reduce((sum, o) => sum + o.total, 0);
             
             const productSales = {};
-            orders.forEach(order => {
+            filteredOrders.forEach(order => {
                 order.items.forEach(item => {
                     productSales[item.name] = (productSales[item.name] || 0) + item.quantity;
                 });
             });
             
-            const topProduct = Object.entries(productSales)
-                .sort((a, b) => b[1] - a[1])[0];
+            const sortedTop = Object.entries(productSales)
+                .sort((a, b) => b[1] - a[1]);
+            const topProduct = sortedTop[0];
+
+            // Lưu cache để sắp xếp danh sách sản phẩm theo độ bán chạy
+            productSalesCache = productSales;
             
             document.getElementById('stat-revenue').textContent = formatMoney(totalRevenue);
             document.getElementById('stat-orders').textContent = totalOrders;
@@ -1281,20 +1436,98 @@
             
             document.getElementById('today-revenue').textContent = formatMoney(todayRevenue);
             document.getElementById('total-orders').textContent = totalOrders;
+
+            // Cập nhật danh sách top sản phẩm bán chạy ở tab sản phẩm
+            const topContainer = document.getElementById('top-products');
+            if (topContainer) {
+                if (!sortedTop.length) {
+                    topContainer.innerHTML = '';
+                } else {
+                    const listHtml = sortedTop.slice(0, 5).map(([name, qty], idx) => `
+                        <div style="display:flex; justify-content:space-between; font-size:13px; padding:3px 0;">
+                            <span>${idx + 1}. ${name}</span>
+                            <span style="opacity:0.8;">${qty.toFixed(2)}</span>
+                        </div>
+                    `).join('');
+                    topContainer.innerHTML = `
+                        <div style="border:1px dashed var(--border); border-radius:10px; padding:8px 10px; background:#f8fafc;">
+                            <div style="font-size:13px; font-weight:600; margin-bottom:4px;">🔥 Top sản phẩm bán chạy</div>
+                            ${listHtml}
+                        </div>
+                    `;
+                }
+            }
         }
 
         function updateUnitsUI() {
             const container = document.getElementById('units-list');
-            container.innerHTML = units.map((u, i) => `
-                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; padding: 10px; border: 2px solid var(--border); border-radius: 8px;">
-                    <input type="text" value="${u.name}" onchange="updateUnit(${i}, 'name', this.value)" 
-                        style="flex: 1 1 120px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 6px;" ${i < 2 ? 'disabled' : ''}>
-                    <input type="number" value="${u.rate}" step="0.01" onchange="updateUnit(${i}, 'rate', this.value)" 
-                        style="flex: 1 1 100px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 6px;" ${i < 2 ? 'disabled' : ''}>
-                    <button class="btn btn-danger" onclick="deleteUnit(${i})" 
-                        style="flex: 0 0 auto; padding: 8px 10px; font-size: 13px;" ${i < 2 ? 'disabled' : ''}>🗑️</button>
-                </div>
-            `).join('');
+            const paginationEl = document.getElementById('units-pagination');
+
+            let filtered = units;
+            if (unitSearchTerm) {
+                const term = unitSearchTerm.toLowerCase();
+                filtered = units.filter(u => (u.name || '').toLowerCase().includes(term));
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="empty-icon">📏</div><h3>Không có đơn vị</h3></div>';
+                if (paginationEl) paginationEl.innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(filtered.length / UNITS_PER_PAGE) || 1;
+            if (currentUnitsPage > totalPages) currentUnitsPage = totalPages;
+            const start = (currentUnitsPage - 1) * UNITS_PER_PAGE;
+            const pageItems = filtered.slice(start, start + UNITS_PER_PAGE);
+
+            container.innerHTML = pageItems.map((u, idx) => {
+                const realIndex = start + idx;
+                return `
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; padding: 10px; border: 2px solid var(--border); border-radius: 8px;">
+                        <input type="text" value="${u.name}" onchange="updateUnit(${realIndex}, 'name', this.value)" 
+                            style="flex: 1 1 120px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 6px;" ${realIndex < 2 ? 'disabled' : ''}>
+                        <input type="number" value="${u.rate}" step="0.01" onchange="updateUnit(${realIndex}, 'rate', this.value)" 
+                            style="flex: 1 1 100px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 6px;" ${realIndex < 2 ? 'disabled' : ''}>
+                        <button class="btn btn-danger" onclick="deleteUnit(${realIndex})" 
+                            style="flex: 0 0 auto; padding: 8px 10px; font-size: 13px;" ${realIndex < 2 ? 'disabled' : ''}>🗑️</button>
+                    </div>
+                `;
+            }).join('');
+
+            if (paginationEl) {
+                paginationEl.innerHTML = totalPages > 1
+                    ? `
+                        <button class="filter-btn" onclick="changeUnitsPage(${currentUnitsPage - 1})" ${currentUnitsPage === 1 ? 'disabled' : ''}>&laquo;</button>
+                        <span style="margin: 0 8px; font-size: 13px;">Trang ${currentUnitsPage}/${totalPages}</span>
+                        <button class="filter-btn" onclick="changeUnitsPage(${currentUnitsPage + 1})" ${currentUnitsPage === totalPages ? 'disabled' : ''}>&raquo;</button>
+                    `
+                    : '';
+            }
+        }
+
+        function searchUnits() {
+            unitSearchTerm = document.getElementById('unit-search-input').value.trim();
+            currentUnitsPage = 1;
+            updateUnitsUI();
+        }
+
+        function changeUnitsPage(page) {
+            if (page < 1) return;
+            currentUnitsPage = page;
+            updateUnitsUI();
+            const settingsSection = document.getElementById('settings');
+            if (settingsSection) settingsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function setAnalyticsRange(range) {
+            analyticsRange = range;
+
+            // Cập nhật trạng thái nút lọc
+            document.getElementById('filter-analytics-today').classList.toggle('active', range === 'today');
+            document.getElementById('filter-analytics-month').classList.toggle('active', range === 'month');
+            document.getElementById('filter-analytics-all').classList.toggle('active', range === 'all');
+
+            updateAnalytics();
         }
 
         function updateUnit(index, field, value) {
@@ -1330,6 +1563,20 @@
 
         function deleteUnit(index) {
             if (index < 2) return;
+
+            const unitName = units[index]?.name;
+            if (!unitName) return;
+
+            // Không cho xóa đơn vị đang dùng trong sản phẩm/giỏ/đơn hàng
+            const usedInProducts = products.some(p => p.unit === unitName);
+            const usedInCart = cart.some(item => item.unit === unitName);
+            const usedInOrders = orders.some(o => (o.items || []).some(it => it.unit === unitName));
+
+            if (usedInProducts || usedInCart || usedInOrders) {
+                showNotification(`⚠️ Không thể xóa đơn vị "${unitName}" vì đang được sử dụng!`, true);
+                return;
+            }
+
             if (confirm('Xóa đơn vị này?')) {
                 units.splice(index, 1);
                 updateUnitsUI();
@@ -1384,6 +1631,8 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             localStorage.setItem('orders', JSON.stringify(orders));
             localStorage.setItem('units', JSON.stringify(units));
+            localStorage.setItem('currentFilter', currentFilter);
+            localStorage.setItem('analyticsRange', analyticsRange);
         }
 
         function loadFromStorage() {
@@ -1392,6 +1641,8 @@
                 cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 orders = JSON.parse(localStorage.getItem('orders') || '[]');
                 units = JSON.parse(localStorage.getItem('units') || JSON.stringify(DEFAULT_UNITS));
+                currentFilter = localStorage.getItem('currentFilter') || 'all';
+                analyticsRange = localStorage.getItem('analyticsRange') || 'today';
 
                 // Chuẩn hóa đơn vị để tránh hiển thị 'undefined'
                 if (!Array.isArray(units) || units.length === 0) {
