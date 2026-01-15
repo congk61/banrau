@@ -16,12 +16,12 @@
         }
 
         :root {
-            --primary: #667eea;
-            --primary-dark: #5568d3;
-            --secondary: #764ba2;
-            --success: #10b981;
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #f59e0b;
+            --success: #22c55e;
             --danger: #ef4444;
-            --warning: #f59e0b;
+            --warning: #f97316;
             --info: #3b82f6;
             --light: #f8fafc;
             --dark: #1e293b;
@@ -30,7 +30,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
             min-height: 100vh;
             padding: 10px;
         }
@@ -45,19 +45,22 @@
         }
 
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #16a34a 100%);
             color: white;
-            padding: 24px;
+            padding: 28px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
         }
 
         .header-left h1 {
-            font-size: 26px;
+            font-size: 28px;
             margin-bottom: 5px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -92,12 +95,13 @@
 
         .tabs {
             display: flex;
-            background: var(--light);
-            border-bottom: 2px solid var(--border);
+            background: white;
+            border-bottom: 2px solid #e0f2fe;
             overflow-x: auto;
             position: sticky;
             top: 0;
             z-index: 100;
+            gap: 0;
         }
 
         .tab {
@@ -105,25 +109,27 @@
             padding: 16px 12px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             border: none;
             background: none;
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
             color: #64748b;
             white-space: nowrap;
             min-width: 120px;
+            border-bottom: 3px solid transparent;
+            position: relative;
         }
 
         .tab:hover {
-            background: #e0e7ff;
             color: var(--primary);
+            background: #f0fdf4;
         }
 
         .tab.active {
-            background: white;
             color: var(--primary);
-            border-bottom: 3px solid var(--primary);
+            border-bottom-color: var(--primary);
+            background: #f0fdf4;
         }
 
         .tab-content {
@@ -186,26 +192,28 @@
         }
 
         .filter-btn {
-            padding: 10px 16px;
-            border: 2px solid var(--border);
+            padding: 10px 18px;
+            border: 2px solid #d1fae5;
             background: white;
             border-radius: 10px;
             cursor: pointer;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 13px;
-            transition: all 0.3s;
-            color: #64748b;
+            transition: all 0.3s ease;
+            color: #16a34a;
         }
 
         .filter-btn:hover {
             border-color: var(--primary);
-            color: var(--primary);
+            background: #f0fdf4;
+            transform: translateY(-2px);
         }
 
         .filter-btn.active {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, #16a34a 100%);
             color: white;
             border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .product-grid {
@@ -216,30 +224,30 @@
         }
 
         .product-card {
-            border: 2px solid var(--border);
-            border-radius: 16px;
+            border: none;
+            border-radius: 14px;
             padding: 0;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             background: white;
             overflow: hidden;
             position: relative;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
 
         .product-card:hover {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transform: translateY(-5px);
-            border-color: var(--primary);
+            box-shadow: 0 12px 28px rgba(16, 185, 129, 0.15);
+            transform: translateY(-8px);
         }
 
         .product-image {
             width: 100%;
             height: 180px;
             object-fit: cover;
-            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
         }
 
         .product-content {
-            padding: 14px;
+            padding: 16px;
         }
 
         .product-header {
@@ -247,23 +255,26 @@
             justify-content: space-between;
             align-items: start;
             margin-bottom: 10px;
+            gap: 8px;
         }
 
         .product-name {
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 700;
             color: var(--dark);
             flex: 1;
+            line-height: 1.3;
         }
 
         .product-badge {
             display: inline-block;
-            padding: 5px 12px;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            white-space: nowrap;
         }
 
         .badge-available {
@@ -282,8 +293,8 @@
         }
 
         .product-price {
-            color: var(--danger);
-            font-size: 18px;
+            color: var(--primary);
+            font-size: 20px;
             font-weight: 700;
             margin: 8px 0;
         }
@@ -354,7 +365,7 @@
 
         .quick-add-btn:hover {
             border-color: var(--primary);
-            background: #e0e7ff;
+            background: #d1fae5;
             color: var(--primary);
         }
 
@@ -364,24 +375,29 @@
 
         .input-group label {
             font-size: 12px;
-            color: #64748b;
-            font-weight: 600;
+            color: #16a34a;
+            font-weight: 700;
             margin-bottom: 6px;
             display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .input-group input {
             width: 100%;
-            padding: 8px 10px;
-            border: 2px solid var(--border);
+            padding: 10px 12px;
+            border: 2px solid #d1fae5;
             border-radius: 8px;
             font-size: 15px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            background: #fafaf9;
         }
 
         .input-group input:focus {
             outline: none;
             border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
 
         .btn {
@@ -390,7 +406,7 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             font-size: 14px;
             display: inline-flex;
             align-items: center;
@@ -399,42 +415,46 @@
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, #16a34a 100%);
             color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
         .btn-success {
-            background: var(--success);
+            background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
             color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
         }
 
         .btn-success:hover {
-            background: #059669;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
             transform: translateY(-2px);
         }
 
         .btn-danger {
-            background: var(--danger);
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
             color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
         .btn-danger:hover {
-            background: #dc2626;
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+            transform: translateY(-2px);
         }
 
         .btn-warning {
-            background: var(--warning);
+            background: linear-gradient(135deg, var(--warning) 0%, #ea580c 100%);
             color: white;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
         }
 
         .btn:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
             transform: none !important;
         }
@@ -537,15 +557,17 @@
 
         .order-card {
             background: white;
-            border: 2px solid var(--border);
+            border: none;
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 16px;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
 
         .order-card:hover {
-            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            box-shadow: 0 12px 28px rgba(16, 185, 129, 0.15);
+            transform: translateY(-4px);
         }
 
         .order-header {
@@ -553,7 +575,7 @@
             justify-content: space-between;
             align-items: center;
             padding-bottom: 15px;
-            border-bottom: 2px solid var(--border);
+            border-bottom: 2px solid #d1fae5;
             margin-bottom: 15px;
         }
 
@@ -571,7 +593,7 @@
         .order-total {
             font-size: 20px;
             font-weight: 700;
-            color: var(--danger);
+            color: var(--primary);
         }
 
         .analytics-grid {
@@ -583,10 +605,11 @@
 
         .analytics-card {
             background: white;
-            border: 2px solid var(--border);
+            border: none;
             border-radius: 12px;
             padding: 20px;
             text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
 
         .analytics-value {
@@ -1024,9 +1047,9 @@
             <div id="units-list" style="margin-bottom: 8px;"></div>
             <div id="units-pagination" style="margin-bottom: 12px; text-align: center;"></div>
             <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                <input type="text" id="new-unit-name" placeholder="Tên đơn vị" 
+                <input type="text" id="new-unit-name" 
                     style="flex: 1 1 130px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
-                <input type="number" id="new-unit-rate" placeholder="Quy đổi (kg)" step="0.01" 
+                <input type="number" id="new-unit-rate" step="0.01" 
                     style="flex: 1 1 110px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                 <button class="btn btn-primary" onclick="addUnit()" 
                     style="flex: 0 0 auto; padding: 8px 14px; font-size: 13px;">➕ Thêm</button>
@@ -1055,9 +1078,7 @@
         const UNITS_PER_PAGE = 10;
         const DEFAULT_UNITS = [
             { name: 'kg', rate: 1 },
-            { name: 'lạng', rate: 0.1 },
-            { name: 'gói', rate: 1 },
-            { name: 'bó', rate: 1 }
+            { name: 'lạng', rate: 0.1 }
         ];
         let units = [...DEFAULT_UNITS];
 
@@ -1214,15 +1235,17 @@
                                 + 1
                             </button>
                         </div>
-                        <div class="input-group">
-                            <label>Số lượng</label>
-                            <input type="number" id="qty-${p.id}" placeholder="0" step="0.1" min="0" 
-                                oninput="calcPrice('${p.id}')" ${!p.available ? 'disabled' : ''}>
-                        </div>
-                        <div class="input-group">
-                            <label>Thành tiền</label>
-                            <input type="number" id="total-${p.id}" placeholder="0" step="1000" min="0" 
-                                oninput="calcQty('${p.id}')" ${!p.available ? 'disabled' : ''}>
+                        <div style="display: flex; gap: 10px;">
+                            <div class="input-group" style="flex: 1;">
+                                <label>Số lượng</label>
+                                <input type="number" id="qty-${p.id}" placeholder="0" step="0.1" min="0" 
+                                    oninput="calcPrice('${p.id}')" ${!p.available ? 'disabled' : ''}>
+                            </div>
+                            <div class="input-group" style="flex: 1;">
+                                <label>Thành tiền</label>
+                                <input type="number" id="total-${p.id}" placeholder="0" step="1000" min="0" 
+                                    oninput="calcQty('${p.id}')" ${!p.available ? 'disabled' : ''}>
+                            </div>
                         </div>
                         <button class="btn btn-primary" onclick="addToCart('${p.id}')" 
                             style="width: 100%; margin-top: 10px;" ${!p.available ? 'disabled' : ''}>
@@ -1353,15 +1376,17 @@
                         Đơn giá: ${formatMoney(item.unitPrice)} / ${item.unit}
                     </div>
                     <div class="cart-item-details">
-                        <div class="input-group">
-                            <label>Số lượng (${item.unit})</label>
-                            <input type="number" value="${item.quantity}" step="0.1" min="0" 
-                                oninput="updateCartItem(${i}, 'qty', this.value)">
-                        </div>
-                        <div class="input-group">
-                            <label>Thành tiền (đ)</label>
-                            <input type="number" value="${Math.round(item.totalPrice)}" step="1000" min="0" 
-                                oninput="updateCartItem(${i}, 'price', this.value)">
+                        <div style="display: flex; gap: 10px;">
+                            <div class="input-group" style="flex: 1;">
+                                <label>Số lượng (${item.unit})</label>
+                                <input type="number" value="${item.quantity}" step="0.1" min="0" 
+                                    oninput="updateCartItem(${i}, 'qty', this.value)">
+                            </div>
+                            <div class="input-group" style="flex: 1;">
+                                <label>Thành tiền (đ)</label>
+                                <input type="number" value="${Math.round(item.totalPrice)}" step="1000" min="0" 
+                                    oninput="updateCartItem(${i}, 'price', this.value)">
+                            </div>
                         </div>
                     </div>
                     <div class="cart-actions">
@@ -1425,8 +1450,16 @@
             
             const total = cart.reduce((sum, item) => sum + item.totalPrice, 0);
             
+            // Tạo mã đơn hàng: YYYYMMDD + 4 số ngẫu nhiên
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const randomNum = String(Math.floor(Math.random() * 10000)).padStart(4, '0');
+            const orderId = `${year}${month}${day}${randomNum}`;
+            
             orders.unshift({
-                id: Date.now(),
+                id: orderId,
                 date: new Date().toLocaleString('vi-VN'),
                 items: [...cart],
                 total
@@ -1438,7 +1471,7 @@
             updateAnalytics();
             saveToStorage();
             
-            showNotification(`💰 Thanh toán thành công! Tổng: ${formatMoney(total)}`);
+            showNotification(`💰 Thanh toán thành công! Mã: ${orderId}`);
         }
 
         function updateOrdersUI() {
