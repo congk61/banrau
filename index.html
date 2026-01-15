@@ -1039,26 +1039,71 @@
         </div>
 
         <div id="settings" class="tab-content">
-            <h3 style="margin-bottom: 15px;">📏 Quản Lý Đơn Vị</h3>
+            <h3 style="margin-bottom: 15px;">� Cấu Hình Google Sheet</h3>
+            <div style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 30px;">
+                <div class="input-group">
+                    <label>Link CSV của Google Sheet</label>
+                    <input type="text" id="sheet-url-input" placeholder="Dán link CSV từ Google Sheet" 
+                        style="width: 100%; padding: 10px 12px; border: 2px solid #d1fae5; border-radius: 8px; font-size: 14px;">
+                </div>
+                <div style="display: flex; gap: 8px; margin-top: 12px;">
+                    <button class="btn btn-primary" onclick="saveSheetUrl()" style="flex: 1;">💾 Lưu Link</button>
+                    <button class="btn btn-success" onclick="loadProductsFromSheet()" style="flex: 1;">⬇️ Tải Sản Phẩm</button>
+                </div>
+                <div style="font-size: 12px; color: #64748b; margin-top: 12px; padding-top: 12px; border-top: 2px solid #e0f2fe;">
+                    <p style="margin-bottom: 8px;">ℹ️ Hướng dẫn:</p>
+                    <ol style="margin-left: 16px; line-height: 1.6;">
+                        <li>Mở Google Sheet của bạn</li>
+                        <li>Chọn File → Chia sẻ → Yêu cầu quyền truy cập (công khai)</li>
+                        <li>Copy link dạng: <code style="background: #f8fafc; padding: 2px 6px; border-radius: 4px;">https://docs.google.com/spreadsheets/d/e/...</code></li>
+                        <li>Dán link vào ô trên và nhấn "Lưu Link"</li>
+                    </ol>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 15px;">�📏 Quản Lý Đơn Vị</h3>
             <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
                 <input type="text" id="unit-search-input" placeholder="Tìm kiếm đơn vị..." 
-                    oninput="searchUnits()" style="flex: 1 1 200px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                    oninput="searchUnits()" style="flex: 1 1 200px; min-width: 0; padding: 8px; border: 2px solid #d1fae5; border-radius: 8px;">
             </div>
             <div id="units-list" style="margin-bottom: 8px;"></div>
             <div id="units-pagination" style="margin-bottom: 12px; text-align: center;"></div>
-            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px;">
                 <input type="text" id="new-unit-name" 
-                    style="flex: 1 1 130px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                    style="flex: 1 1 130px; min-width: 0; padding: 8px; border: 2px solid #d1fae5; border-radius: 8px;">
                 <input type="number" id="new-unit-rate" step="0.01" 
-                    style="flex: 1 1 110px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
+                    style="flex: 1 1 110px; min-width: 0; padding: 8px; border: 2px solid #d1fae5; border-radius: 8px;">
                 <button class="btn btn-primary" onclick="addUnit()" 
                     style="flex: 0 0 auto; padding: 8px 14px; font-size: 13px;">➕ Thêm</button>
+            </div>
+
+            <h3 style="margin-bottom: 15px;">💾 Dung Lượng Lưu Trữ</h3>
+            <div style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                    <div>
+                        <div style="color: #64748b; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Sản Phẩm</div>
+                        <div id="storage-products" style="font-size: 18px; font-weight: 700; color: var(--primary);">0 KB</div>
+                    </div>
+                    <div>
+                        <div style="color: #64748b; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Đơn Hàng</div>
+                        <div id="storage-orders" style="font-size: 18px; font-weight: 700; color: #16a34a;">0 KB</div>
+                    </div>
+                    <div>
+                        <div style="color: #64748b; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Giỏ Hàng</div>
+                        <div id="storage-cart" style="font-size: 18px; font-weight: 700; color: #f59e0b;">0 KB</div>
+                    </div>
+                    <div>
+                        <div style="color: #64748b; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Tổng</div>
+                        <div id="storage-total" style="font-size: 18px; font-weight: 700; color: #3b82f6;">0 KB</div>
+                    </div>
+                </div>
+                <button class="btn btn-danger" onclick="clearAllData()" style="width: 100%;">🗑️ Xóa Tất Cả Dữ Liệu</button>
             </div>
         </div>
     </div>
 
     <script>
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQoan7BE8OZRhivl2amxyW-jRgxROv5N2B_F98BkYaq1ZRv_tM3b_pJ_ktnZBsRarKJlf7xQIijJ5Y9/pub?output=csv';
+        let SHEET_URL = localStorage.getItem('sheetUrl') || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQoan7BE8OZRhivl2amxyW-jRgxROv5N2B_F98BkYaq1ZRv_tM3b_pJ_ktnZBsRarKJlf7xQIijJ5Y9/pub?output=csv';
         
         let products = [];
         let cart = [];
@@ -1096,6 +1141,7 @@
             updateOrdersUI();
             updateUnitsUI();
             updateAnalytics();
+            updateStorageDisplay();
         };
 
         function loadProducts(force = false) {
@@ -1211,7 +1257,7 @@
                 <div class="product-card ${!p.available ? 'out-of-stock' : ''}">
                     <div class="product-content">
                         <div class="product-header">
-                            <div class="product-name">${p.name}</div>
+                            <div class="product-name">${p.name} <span style="color: #64748b; font-weight: 500; font-size: 13px;">(${productSalesCache[p.name] ? productSalesCache[p.name].toFixed(0) : 0}x)</span></div>
                             <span class="product-badge ${p.available ? 'badge-available' : 'badge-out'}">
                                 ${p.available ? '✓ Còn' : '✗ Hết'}
                             </span>
@@ -1635,6 +1681,64 @@
             updateUnitsUI();
         }
 
+        function getStorageSize(key) {
+            const item = localStorage.getItem(key);
+            if (!item) return 0;
+            return new Blob([item]).size;
+        }
+
+        function updateStorageDisplay() {
+            const productsSize = getStorageSize('products');
+            const ordersSize = getStorageSize('orders');
+            const cartSize = getStorageSize('cart');
+            const totalSize = productsSize + ordersSize + cartSize;
+
+            const formatSize = (bytes) => {
+                if (bytes === 0) return '0 KB';
+                const kb = (bytes / 1024).toFixed(2);
+                return kb + ' KB';
+            };
+
+            document.getElementById('storage-products').textContent = formatSize(productsSize);
+            document.getElementById('storage-orders').textContent = formatSize(ordersSize);
+            document.getElementById('storage-cart').textContent = formatSize(cartSize);
+            document.getElementById('storage-total').textContent = formatSize(totalSize);
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Xác nhận xóa tất cả dữ liệu? Hành động này không thể hoàn tác!')) {
+                localStorage.clear();
+                products = [];
+                cart = [];
+                orders = [];
+                units = [...DEFAULT_UNITS];
+                productSalesCache = {};
+                SHEET_URL = localStorage.getItem('sheetUrl') || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQoan7BE8OZRhivl2amxyW-jRgxROv5N2B_F98BkYaq1ZRv_tM3b_pJ_ktnZBsRarKJlf7xQIijJ5Y9/pub?output=csv';
+                saveToStorage();
+                displayProducts();
+                updateCartUI();
+                updateOrdersUI();
+                updateUnitsUI();
+                updateStorageDisplay();
+                showNotification('✅ Đã xóa tất cả dữ liệu!');
+            }
+        }
+
+        function saveSheetUrl() {
+            const url = document.getElementById('sheet-url-input').value.trim();
+            if (!url) {
+                showNotification('⚠️ Vui lòng nhập link Google Sheet!', true);
+                return;
+            }
+            localStorage.setItem('sheetUrl', url);
+            SHEET_URL = url;
+            showNotification('✅ Đã lưu link Google Sheet!');
+        }
+
+        function loadProductsFromSheet() {
+            loadProducts(true);
+        }
+
         function changeUnitsPage(page) {
             if (page < 1) return;
             currentUnitsPage = page;
@@ -1746,16 +1850,29 @@
             localStorage.setItem('units', JSON.stringify(units));
             localStorage.setItem('currentFilter', currentFilter);
             localStorage.setItem('analyticsRange', analyticsRange);
+            updateStorageDisplay();
         }
 
         function loadFromStorage() {
             try {
+                // Load Sheet URL
+                const savedSheetUrl = localStorage.getItem('sheetUrl');
+                if (savedSheetUrl) {
+                    SHEET_URL = savedSheetUrl;
+                }
+                
                 products = JSON.parse(localStorage.getItem('products') || '[]');
                 cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 orders = JSON.parse(localStorage.getItem('orders') || '[]');
                 units = JSON.parse(localStorage.getItem('units') || JSON.stringify(DEFAULT_UNITS));
                 currentFilter = localStorage.getItem('currentFilter') || 'all';
                 analyticsRange = localStorage.getItem('analyticsRange') || 'today';
+                
+                // Update input field với saved URL
+                const sheetInput = document.getElementById('sheet-url-input');
+                if (sheetInput) {
+                    sheetInput.value = SHEET_URL;
+                }
 
                 // Chuẩn hóa đơn vị để tránh hiển thị 'undefined'
                 if (!Array.isArray(units) || units.length === 0) {
