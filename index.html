@@ -235,7 +235,7 @@
         }
 
         .product-content {
-            padding: 16px;
+            padding: 14px;
         }
 
         .product-header {
@@ -246,7 +246,7 @@
         }
 
         .product-name {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 700;
             color: var(--dark);
             flex: 1;
@@ -279,9 +279,9 @@
 
         .product-price {
             color: var(--danger);
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            margin: 10px 0;
+            margin: 8px 0;
         }
 
         .product-meta {
@@ -337,7 +337,7 @@
         }
 
         .quick-add-btn {
-            padding: 8px;
+            padding: 6px 8px;
             border: 2px dashed var(--border);
             background: var(--light);
             border-radius: 8px;
@@ -368,7 +368,7 @@
 
         .input-group input {
             width: 100%;
-            padding: 10px 12px;
+            padding: 8px 10px;
             border: 2px solid var(--border);
             border-radius: 8px;
             font-size: 15px;
@@ -624,6 +624,57 @@
 
             .product-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .product-card {
+                border-radius: 14px;
+            }
+
+            .product-content {
+                padding: 10px 12px;
+            }
+
+            .product-name {
+                font-size: 16px;
+            }
+
+            .product-price {
+                font-size: 17px;
+                margin: 6px 0;
+            }
+
+            .unit-selector {
+                margin: 8px 0;
+            }
+
+            .unit-selector button {
+                min-width: 0;
+                padding: 6px;
+                font-size: 12px;
+            }
+
+            .quick-add {
+                margin: 8px 0;
+                gap: 6px;
+            }
+
+            .quick-add-btn {
+                padding: 6px;
+                font-size: 12px;
+            }
+
+            .input-group {
+                margin: 6px 0;
+            }
+
+            .input-group input {
+                font-size: 14px;
+                padding: 7px 9px;
+            }
+
+            .btn {
+                padding: 10px 14px;
+                font-size: 13px;
             }
 
             .tab-content {
@@ -929,10 +980,10 @@
                         </div>
                         <div class="quick-add">
                             <button class="quick-add-btn" onclick="quickAdd('${p.id}', 0.5)" ${!p.available ? 'disabled' : ''}>
-                                + 0.5 ${p.unit}
+                                + 0.5
                             </button>
                             <button class="quick-add-btn" onclick="quickAdd('${p.id}', 1)" ${!p.available ? 'disabled' : ''}>
-                                + 1 ${p.unit}
+                                + 1
                             </button>
                         </div>
                         <div class="input-group">
@@ -1235,12 +1286,13 @@
         function updateUnitsUI() {
             const container = document.getElementById('units-list');
             container.innerHTML = units.map((u, i) => `
-                <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; margin-bottom: 10px; padding: 12px; border: 2px solid var(--border); border-radius: 8px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; padding: 10px; border: 2px solid var(--border); border-radius: 8px;">
                     <input type="text" value="${u.name}" onchange="updateUnit(${i}, 'name', this.value)" 
-                        style="padding: 8px; border: 2px solid var(--border); border-radius: 6px;" ${i < 2 ? 'disabled' : ''}>
+                        style="flex: 1 1 120px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 6px;" ${i < 2 ? 'disabled' : ''}>
                     <input type="number" value="${u.rate}" step="0.01" onchange="updateUnit(${i}, 'rate', this.value)" 
-                        style="padding: 8px; border: 2px solid var(--border); border-radius: 6px;" ${i < 2 ? 'disabled' : ''}>
-                    <button class="btn btn-danger" onclick="deleteUnit(${i})" ${i < 2 ? 'disabled' : ''}>🗑️</button>
+                        style="flex: 1 1 100px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 6px;" ${i < 2 ? 'disabled' : ''}>
+                    <button class="btn btn-danger" onclick="deleteUnit(${i})" 
+                        style="flex: 0 0 auto; padding: 8px 10px; font-size: 13px;" ${i < 2 ? 'disabled' : ''}>🗑️</button>
                 </div>
             `).join('');
         }
@@ -1341,7 +1393,28 @@
                 orders = JSON.parse(localStorage.getItem('orders') || '[]');
                 units = JSON.parse(localStorage.getItem('units') || JSON.stringify(DEFAULT_UNITS));
 
-                // Chuẩn hóa dữ liệu để tránh hiển thị 'undefined' đơn vị
+                // Chuẩn hóa đơn vị để tránh hiển thị 'undefined'
+                if (!Array.isArray(units) || units.length === 0) {
+                    units = [...DEFAULT_UNITS];
+                } else {
+                    units = units.map((u, index) => {
+                        // Nếu dữ liệu cũ là chuỗi: ['kg', 'lạng', ...]
+                        if (typeof u === 'string') {
+                            return {
+                                name: u || (DEFAULT_UNITS[index]?.name || `dv${index + 1}`),
+                                rate: DEFAULT_UNITS[index]?.rate || 1
+                            };
+                        }
+
+                        // Nếu là object nhưng thiếu field
+                        const name = u && u.name ? u.name : (DEFAULT_UNITS[index]?.name || `dv${index + 1}`);
+                        let rate = typeof u?.rate === 'number' && u.rate > 0 ? u.rate : (DEFAULT_UNITS[index]?.rate || 1);
+
+                        return { name, rate };
+                    });
+                }
+
+                // Chuẩn hóa sản phẩm, giỏ hàng, đơn hàng để luôn có đơn vị hợp lệ
                 products = products.map(p => ({
                     ...p,
                     unit: p && p.unit ? p.unit : 'kg'
