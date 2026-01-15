@@ -634,12 +634,13 @@
         let products = [];
         let cart = [];
         let orders = [];
-        let units = [
+        const DEFAULT_UNITS = [
             { name: 'kg', rate: 1 },
             { name: 'lạng', rate: 0.1 },
             { name: 'gói', rate: 1 },
             { name: 'bó', rate: 1 }
         ];
+        let units = [...DEFAULT_UNITS];
 
         const DEFAULT_PRODUCT_IMAGE = 'https://via.placeholder.com/150?text=No+Image';
 
@@ -648,6 +649,8 @@
         // Load data on startup
         window.onload = function() {
             loadFromLocalStorage();
+            normalizeUnits();
+            normalizeProducts();
             // Load products từ localStorage, chỉ fetch khi nhấn nút "Tải Lại"
             if (products.length > 0) {
                 displayProducts(products);
@@ -668,6 +671,7 @@
                 if (savedProducts) {
                     try {
                         products = JSON.parse(savedProducts);
+                        normalizeProducts();
                         if (products.length > 0) {
                             displayProducts(products);
                             document.getElementById('products-loading').style.display = 'none';
@@ -716,6 +720,7 @@
                     return;
                 }
 
+                normalizeProducts();
                 // Lưu products vào localStorage sau khi load thành công
                 localStorage.setItem('products', JSON.stringify(products));
                 
@@ -762,6 +767,35 @@
             }
             
             return result;
+        }
+
+        function normalizeUnits() {
+            if (!Array.isArray(units) || units.length === 0) {
+                units = [...DEFAULT_UNITS];
+                return;
+            }
+            units = units
+                .filter(u => u && typeof u.name === 'string' && u.name.trim() && Number.isFinite(Number(u.rate)))
+                .map(u => ({ name: u.name.trim(), rate: Number(u.rate) }));
+            if (units.length === 0) units = [...DEFAULT_UNITS];
+        }
+
+        function normalizeProducts() {
+            if (!Array.isArray(products)) {
+                products = [];
+                return;
+            }
+            normalizeUnits();
+            const fallbackUnit = units[0]?.name || 'kg';
+            const unitSet = new Set(units.map(u => u.name));
+            products = products.map(p => {
+                if (!p || typeof p !== 'object') return null;
+                const unit = (p.unit || '').toString().trim();
+                return {
+                    ...p,
+                    unit: unitSet.has(unit) ? unit : fallbackUnit
+                };
+            }).filter(Boolean);
         }
 
         function parseCSVLine(line) {
@@ -1196,6 +1230,8 @@
                     console.error('Error loading products from localStorage:', e);
                 }
             }
+            normalizeUnits();
+            normalizeProducts();
         }
 
         function formatCurrency(amount) {
