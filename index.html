@@ -1000,8 +1000,14 @@
         }
 
         function displayProducts() {
-            // Cập nhật cache bán chạy trước khi sắp xếp
-            updateAnalytics();
+            // Cập nhật cache bán chạy từ tất cả đơn hàng
+            const productSales = {};
+            orders.forEach(order => {
+                order.items.forEach(item => {
+                    productSales[item.name] = (productSales[item.name] || 0) + item.quantity;
+                });
+            });
+            productSalesCache = productSales;
             
             let filtered = products;
             
