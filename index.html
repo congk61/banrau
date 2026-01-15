@@ -1000,6 +1000,9 @@
         }
 
         function displayProducts() {
+            // Cập nhật cache bán chạy trước khi sắp xếp
+            updateAnalytics();
+            
             let filtered = products;
             
             if (productSearchTerm) {
