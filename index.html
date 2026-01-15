@@ -412,10 +412,16 @@
         }
 
         .unit-selector {
-            display: flex;
+            display: none;
             gap: 5px;
             margin-top: 10px;
             flex-wrap: wrap;
+        }
+
+        @media (max-width: 767px) {
+            .unit-selector {
+                display: flex;
+            }
         }
 
         .unit-selector button {
@@ -548,7 +554,7 @@
 
             <div class="settings-section">
                 <h3>📊 Quản Lý Dữ Liệu</h3>
-                <button class="btn btn-warning" onclick="loadProducts()" style="margin-right: 10px;">🔄 Tải Lại Dữ Liệu</button>
+                <button class="btn btn-warning" onclick="loadProducts(true)" style="margin-right: 10px;">🔄 Tải Lại Dữ Liệu</button>
             </div>
         </div>
     </div>
@@ -571,14 +577,36 @@
         // Load data on startup
         window.onload = function() {
             loadFromLocalStorage();
-            loadProducts();
+            // Load products từ localStorage, chỉ fetch khi nhấn nút "Tải Lại"
+            if (products.length > 0) {
+                displayProducts(products);
+            } else {
+                // Nếu chưa có dữ liệu trong localStorage, mới fetch
+                loadProducts(true);
+            }
             updateCartDisplay();
             updateOrderHistory();
             updateUnitsDisplay();
             updateStorageInfo();
         };
 
-        function loadProducts() {
+        function loadProducts(forceReload = false) {
+            // Nếu không force reload và đã có dữ liệu trong localStorage, load từ đó
+            if (!forceReload) {
+                const savedProducts = localStorage.getItem('products');
+                if (savedProducts) {
+                    try {
+                        products = JSON.parse(savedProducts);
+                        if (products.length > 0) {
+                            displayProducts(products);
+                            document.getElementById('products-loading').style.display = 'none';
+                            return;
+                        }
+                    } catch (e) {
+                        console.error('Error loading products from localStorage:', e);
+                    }
+                }
+            }
             document.getElementById('products-loading').style.display = 'block';
             document.getElementById('products-error').style.display = 'none';
             
@@ -617,6 +645,9 @@
                     return;
                 }
 
+                // Lưu products vào localStorage sau khi load thành công
+                localStorage.setItem('products', JSON.stringify(products));
+                
                 displayProducts(products);
                 document.getElementById('products-loading').style.display = 'none';
                 showNotification('✅ Đã tải dữ liệu thành công!');
@@ -1064,6 +1095,7 @@
             localStorage.setItem('cart', JSON.stringify(cart));
             localStorage.setItem('orders', JSON.stringify(orders));
             localStorage.setItem('units', JSON.stringify(units));
+            localStorage.setItem('products', JSON.stringify(products));
             updateStorageInfo();
         }
 
@@ -1071,10 +1103,18 @@
             const savedCart = localStorage.getItem('cart');
             const savedOrders = localStorage.getItem('orders');
             const savedUnits = localStorage.getItem('units');
+            const savedProducts = localStorage.getItem('products');
             
             if (savedCart) cart = JSON.parse(savedCart);
             if (savedOrders) orders = JSON.parse(savedOrders);
             if (savedUnits) units = JSON.parse(savedUnits);
+            if (savedProducts) {
+                try {
+                    products = JSON.parse(savedProducts);
+                } catch (e) {
+                    console.error('Error loading products from localStorage:', e);
+                }
+            }
         }
 
         function formatCurrency(amount) {
