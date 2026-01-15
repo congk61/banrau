@@ -909,7 +909,6 @@
             
             container.innerHTML = filtered.map(p => `
                 <div class="product-card ${!p.available ? 'out-of-stock' : ''}">
-                    <img src="${p.image}" alt="${p.name}" class="product-image" onerror="this.src='https://via.placeholder.com/300x180?text=No+Image'">
                     <div class="product-content">
                         <div class="product-header">
                             <div class="product-name">${p.name}</div>
@@ -1341,6 +1340,25 @@
                 cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 orders = JSON.parse(localStorage.getItem('orders') || '[]');
                 units = JSON.parse(localStorage.getItem('units') || JSON.stringify(DEFAULT_UNITS));
+
+                // Chuẩn hóa dữ liệu để tránh hiển thị 'undefined' đơn vị
+                products = products.map(p => ({
+                    ...p,
+                    unit: p && p.unit ? p.unit : 'kg'
+                }));
+
+                cart = cart.map(item => ({
+                    ...item,
+                    unit: item && item.unit ? item.unit : 'kg'
+                }));
+
+                orders = orders.map(o => ({
+                    ...o,
+                    items: (o.items || []).map(it => ({
+                        ...it,
+                        unit: it && it.unit ? it.unit : 'kg'
+                    }))
+                }));
             } catch (e) {
                 console.error('Storage error:', e);
             }
