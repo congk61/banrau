@@ -126,14 +126,6 @@
             background: #f9f9f9;
         }
 
-        .product-image {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-
         .product-name {
             font-size: 18px;
             font-weight: 600;
@@ -247,7 +239,7 @@
 
         .cart-item {
             display: grid;
-            grid-template-columns: 60px 1fr auto;
+            grid-template-columns: 1fr auto;
             gap: 15px;
             padding: 15px;
             border: 2px solid #eee;
@@ -255,13 +247,6 @@
             margin-bottom: 10px;
             align-items: center;
             background: white;
-        }
-
-        .cart-item-image {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 8px;
         }
 
         .cart-item-info {
@@ -743,7 +728,6 @@
                 
                 return `
                     <div class="product-card ${!product.available ? 'out-of-stock' : ''}">
-                        <img src="${product.image}" alt="${product.name}" class="product-image" onerror="this.src=DEFAULT_PRODUCT_IMAGE">
                         <div class="product-name">${product.name}</div>
                         <div class="product-price">${formatCurrency(product.price)} / ${product.unit}</div>
                         <span class="product-status ${product.available ? 'status-available' : 'status-out'}">
@@ -833,8 +817,7 @@
                     unit: product.unit,
                     unitPrice: product.price * (units.find(u => u.name === product.unit)?.rate || 1),
                     quantity: qty,
-                    totalPrice: price || (qty * product.price * (units.find(u => u.name === product.unit)?.rate || 1)),
-                    image: product.image
+                    totalPrice: price || (qty * product.price * (units.find(u => u.name === product.unit)?.rate || 1))
                 });
             }
             
@@ -867,7 +850,6 @@
             
             container.innerHTML = cart.map((item, index) => `
                 <div class="cart-item">
-                    <img src="${item.image}" alt="${item.name}" class="cart-item-image" onerror="this.src='https://via.placeholder.com/60?text=No+Image'">
                     <div class="cart-item-info">
                         <div class="cart-item-name">${item.name}</div>
                         <div style="font-size: 14px; color: #666; margin-bottom: 5px;">
