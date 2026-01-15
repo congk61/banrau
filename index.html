@@ -16,12 +16,12 @@
         }
 
         :root {
-            --primary: #667eea;
-            --primary-dark: #5568d3;
-            --secondary: #764ba2;
-            --success: #10b981;
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #f59e0b;
+            --success: #22c55e;
             --danger: #ef4444;
-            --warning: #f59e0b;
+            --warning: #f97316;
             --info: #3b82f6;
             --light: #f8fafc;
             --dark: #1e293b;
@@ -30,7 +30,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
             min-height: 100vh;
             padding: 10px;
         }
@@ -45,19 +45,22 @@
         }
 
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, #16a34a 100%);
             color: white;
-            padding: 24px;
+            padding: 28px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
         }
 
         .header-left h1 {
-            font-size: 26px;
+            font-size: 28px;
             margin-bottom: 5px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -216,26 +219,26 @@
         }
 
         .product-card {
-            border: 2px solid var(--border);
-            border-radius: 16px;
+            border: none;
+            border-radius: 14px;
             padding: 0;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             background: white;
             overflow: hidden;
             position: relative;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
 
         .product-card:hover {
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transform: translateY(-5px);
-            border-color: var(--primary);
+            box-shadow: 0 12px 28px rgba(16, 185, 129, 0.15);
+            transform: translateY(-8px);
         }
 
         .product-image {
             width: 100%;
             height: 180px;
             object-fit: cover;
-            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
         }
 
         .product-content {
@@ -399,33 +402,36 @@
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, #16a34a 100%);
             color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .btn-primary:hover {
-            background: var(--primary-dark);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
         .btn-success {
-            background: var(--success);
+            background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
             color: white;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
         }
 
         .btn-success:hover {
-            background: #059669;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
             transform: translateY(-2px);
         }
 
         .btn-danger {
-            background: var(--danger);
+            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
             color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
         .btn-danger:hover {
-            background: #dc2626;
+            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+            transform: translateY(-2px);
         }
 
         .btn-warning {
@@ -1016,6 +1022,51 @@
         </div>
 
         <div id="settings" class="tab-content">
+            <!-- Google Sheet URL Settings -->
+            <div style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(245, 158, 11, 0.05) 100%); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 2px solid #d1fae5;">
+                <h3 style="margin-bottom: 12px; color: var(--primary);">📊 Google Sheet</h3>
+                <div class="input-group">
+                    <label>Link CSV Google Sheet (Chia sẻ công khai)</label>
+                    <input type="text" id="sheet-url-input" placeholder="Nhập link CSV Google Sheet..." 
+                        style="width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 8px;">
+                </div>
+                <div style="font-size: 13px; color: #64748b; margin-top: 10px; line-height: 1.6;">
+                    <strong>📖 Hướng dẫn:</strong><br>
+                    1. Tạo Google Sheet với cột: <code style="background: var(--light); padding: 2px 6px; border-radius: 4px;">ID, Tên, Đơn vị, Giá, Còn hàng (X/trống), Hình ảnh</code><br>
+                    2. Nhập X trong cột "Còn hàng" nếu sản phẩm còn (để trống nếu hết)<br>
+                    3. File > Chia sẻ > Tìm link xuất CSV<br>
+                    4. Dán link vào ô trên và nhấn "Lưu & Tải lại"
+                </div>
+                <button class="btn btn-primary" onclick="saveSheetUrl()" 
+                    style="margin-top: 12px; width: 100%;">💾 Lưu & Tải lại Dữ Liệu</button>
+            </div>
+
+            <!-- Storage Management -->
+            <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(34, 197, 94, 0.05) 100%); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 2px solid #dbeafe;">
+                <h3 style="margin-bottom: 12px; color: var(--info);">💾 Quản Lý Bộ Nhớ</h3>
+                <div id="storage-display" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                    <div style="background: white; padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--primary);">-</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">📦 Sản Phẩm</div>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--success);">-</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">📋 Đơn Hàng</div>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--warning);">-</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">🛒 Giỏ Hàng</div>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--danger);">-</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">📊 Tổng</div>
+                    </div>
+                </div>
+                <button class="btn btn-danger" onclick="clearAllData()" 
+                    style="width: 100%;">🗑️ Xóa Toàn Bộ Dữ Liệu</button>
+            </div>
+
+            <!-- Units Management -->
             <h3 style="margin-bottom: 15px;">📏 Quản Lý Đơn Vị</h3>
             <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
                 <input type="text" id="unit-search-input" placeholder="Tìm kiếm đơn vị..." 
@@ -1035,7 +1086,8 @@
     </div>
 
     <script>
-        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQoan7BE8OZRhivl2amxyW-jRgxROv5N2B_F98BkYaq1ZRv_tM3b_pJ_ktnZBsRarKJlf7xQIijJ5Y9/pub?output=csv';
+        const DEFAULT_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQoan7BE8OZRhivl2amxyW-jRgxROv5N2B_F98BkYaq1ZRv_tM3b_pJ_ktnZBsRarKJlf7xQIijJ5Y9/pub?output=csv';
+        let SHEET_URL = DEFAULT_SHEET_URL;
         
         let products = [];
         let cart = [];
@@ -1061,6 +1113,8 @@
 
         window.onload = function() {
             loadFromStorage();
+            loadSheetUrlFromStorage();
+            updateStorageDisplay();
 
             if (products.length === 0) {
                 loadProducts(true);
@@ -1191,7 +1245,7 @@
                 <div class="product-card ${!p.available ? 'out-of-stock' : ''}">
                     <div class="product-content">
                         <div class="product-header">
-                            <div class="product-name">${p.name}</div>
+                            <div class="product-name">${p.name} <span style="font-size: 13px; color: var(--danger); font-weight: 600;">${productSalesCache[p.name] ? `(${productSalesCache[p.name].toFixed(2)}x)` : ''}</span></div>
                             <span class="product-badge ${p.available ? 'badge-available' : 'badge-out'}">
                                 ${p.available ? '✓ Còn' : '✗ Hết'}
                             </span>
@@ -1726,6 +1780,7 @@
             localStorage.setItem('units', JSON.stringify(units));
             localStorage.setItem('currentFilter', currentFilter);
             localStorage.setItem('analyticsRange', analyticsRange);
+            updateStorageDisplay();
         }
 
         function loadFromStorage() {
@@ -1778,6 +1833,89 @@
                 }));
             } catch (e) {
                 console.error('Storage error:', e);
+            }
+        }
+
+        function loadSheetUrlFromStorage() {
+            const storedUrl = localStorage.getItem('sheetUrl');
+            if (storedUrl) {
+                SHEET_URL = storedUrl;
+                document.getElementById('sheet-url-input').value = storedUrl;
+            } else {
+                SHEET_URL = DEFAULT_SHEET_URL;
+                document.getElementById('sheet-url-input').value = DEFAULT_SHEET_URL;
+            }
+        }
+
+        function saveSheetUrl() {
+            const url = document.getElementById('sheet-url-input').value.trim();
+            if (!url) {
+                showNotification('⚠️ Vui lòng nhập link Google Sheet!', true);
+                return;
+            }
+            
+            localStorage.setItem('sheetUrl', url);
+            SHEET_URL = url;
+            
+            showNotification('✅ Đã lưu link Google Sheet!');
+            
+            // Tải lại dữ liệu từ sheet mới
+            loadProducts(true);
+        }
+
+        function getStorageSize(key) {
+            const data = localStorage.getItem(key) || '';
+            return (new Blob([data]).size / 1024).toFixed(1);
+        }
+
+        function updateStorageDisplay() {
+            const productsSize = getStorageSize('products');
+            const ordersSize = getStorageSize('orders');
+            const cartSize = getStorageSize('cart');
+            const totalSize = (parseFloat(productsSize) + parseFloat(ordersSize) + parseFloat(cartSize)).toFixed(1);
+            
+            const display = document.getElementById('storage-display');
+            if (display) {
+                display.innerHTML = `
+                    <div style="background: white; padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--primary);">${productsSize} KB</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">📦 Sản Phẩm</div>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--success);">${ordersSize} KB</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">📋 Đơn Hàng</div>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--warning);">${cartSize} KB</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">🛒 Giỏ Hàng</div>
+                    </div>
+                    <div style="background: white; padding: 12px; border-radius: 8px; text-align: center; border: 2px solid var(--border);">
+                        <div style="font-size: 18px; font-weight: 700; color: var(--danger);">${totalSize} KB</div>
+                        <div style="font-size: 12px; color: #64748b; margin-top: 4px;">📊 Tổng</div>
+                    </div>
+                `;
+            }
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ Xóa TOÀN BỘ dữ liệu? Hành động này không thể hoàn tác!')) {
+                localStorage.clear();
+                products = [];
+                cart = [];
+                orders = [];
+                units = [...DEFAULT_UNITS];
+                currentFilter = 'all';
+                analyticsRange = 'today';
+                productSalesCache = {};
+                
+                saveToStorage();
+                updateStorageDisplay();
+                updateCartUI();
+                updateOrdersUI();
+                updateUnitsUI();
+                displayProducts();
+                
+                showNotification('🗑️ Đã xóa toàn bộ dữ liệu!');
             }
         }
     </script>
