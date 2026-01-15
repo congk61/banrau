@@ -16,12 +16,12 @@
         }
 
         :root {
-            --primary: #10b981;
-            --primary-dark: #059669;
-            --secondary: #f59e0b;
-            --success: #22c55e;
+            --primary: #667eea;
+            --primary-dark: #5568d3;
+            --secondary: #764ba2;
+            --success: #10b981;
             --danger: #ef4444;
-            --warning: #f97316;
+            --warning: #f59e0b;
             --info: #3b82f6;
             --light: #f8fafc;
             --dark: #1e293b;
@@ -30,7 +30,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             min-height: 100vh;
             padding: 10px;
         }
@@ -45,22 +45,19 @@
         }
 
         .header {
-            background: linear-gradient(135deg, var(--primary) 0%, #16a34a 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: 28px 24px;
+            padding: 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 15px;
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.2);
         }
 
         .header-left h1 {
-            font-size: 28px;
+            font-size: 26px;
             margin-bottom: 5px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -95,13 +92,12 @@
 
         .tabs {
             display: flex;
-            background: white;
-            border-bottom: 2px solid #e0f2fe;
+            background: var(--light);
+            border-bottom: 2px solid var(--border);
             overflow-x: auto;
             position: sticky;
             top: 0;
             z-index: 100;
-            gap: 0;
         }
 
         .tab {
@@ -109,27 +105,25 @@
             padding: 16px 12px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             border: none;
             background: none;
             font-size: 14px;
-            font-weight: 700;
+            font-weight: 600;
             color: #64748b;
             white-space: nowrap;
             min-width: 120px;
-            border-bottom: 3px solid transparent;
-            position: relative;
         }
 
         .tab:hover {
+            background: #e0e7ff;
             color: var(--primary);
-            background: #f0fdf4;
         }
 
         .tab.active {
+            background: white;
             color: var(--primary);
-            border-bottom-color: var(--primary);
-            background: #f0fdf4;
+            border-bottom: 3px solid var(--primary);
         }
 
         .tab-content {
@@ -192,28 +186,26 @@
         }
 
         .filter-btn {
-            padding: 10px 18px;
-            border: 2px solid #d1fae5;
+            padding: 10px 16px;
+            border: 2px solid var(--border);
             background: white;
             border-radius: 10px;
             cursor: pointer;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 13px;
-            transition: all 0.3s ease;
-            color: #16a34a;
+            transition: all 0.3s;
+            color: #64748b;
         }
 
         .filter-btn:hover {
             border-color: var(--primary);
-            background: #f0fdf4;
-            transform: translateY(-2px);
+            color: var(--primary);
         }
 
         .filter-btn.active {
-            background: linear-gradient(135deg, var(--primary) 0%, #16a34a 100%);
+            background: var(--primary);
             color: white;
             border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .product-grid {
@@ -224,30 +216,30 @@
         }
 
         .product-card {
-            border: none;
-            border-radius: 14px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
             padding: 0;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             background: white;
             overflow: hidden;
             position: relative;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
 
         .product-card:hover {
-            box-shadow: 0 12px 28px rgba(16, 185, 129, 0.15);
-            transform: translateY(-8px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+            border-color: var(--primary);
         }
 
         .product-image {
             width: 100%;
             height: 180px;
             object-fit: cover;
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            background: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
         }
 
         .product-content {
-            padding: 16px;
+            padding: 14px;
         }
 
         .product-header {
@@ -255,26 +247,23 @@
             justify-content: space-between;
             align-items: start;
             margin-bottom: 10px;
-            gap: 8px;
         }
 
         .product-name {
-            font-size: 16px;
+            font-size: 17px;
             font-weight: 700;
             color: var(--dark);
             flex: 1;
-            line-height: 1.3;
         }
 
         .product-badge {
             display: inline-block;
-            padding: 6px 12px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            white-space: nowrap;
         }
 
         .badge-available {
@@ -293,8 +282,8 @@
         }
 
         .product-price {
-            color: var(--primary);
-            font-size: 20px;
+            color: var(--danger);
+            font-size: 18px;
             font-weight: 700;
             margin: 8px 0;
         }
@@ -365,7 +354,7 @@
 
         .quick-add-btn:hover {
             border-color: var(--primary);
-            background: #d1fae5;
+            background: #e0e7ff;
             color: var(--primary);
         }
 
@@ -375,29 +364,24 @@
 
         .input-group label {
             font-size: 12px;
-            color: #16a34a;
-            font-weight: 700;
+            color: #64748b;
+            font-weight: 600;
             margin-bottom: 6px;
             display: block;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .input-group input {
             width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #d1fae5;
+            padding: 8px 10px;
+            border: 2px solid var(--border);
             border-radius: 8px;
             font-size: 15px;
-            transition: all 0.3s ease;
-            background: #fafaf9;
+            transition: all 0.3s;
         }
 
         .input-group input:focus {
             outline: none;
             border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
 
         .btn {
@@ -406,7 +390,7 @@
             border-radius: 10px;
             cursor: pointer;
             font-weight: 600;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
             font-size: 14px;
             display: inline-flex;
             align-items: center;
@@ -415,46 +399,42 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, #16a34a 100%);
+            background: var(--primary);
             color: white;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .btn-primary:hover {
-            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+            background: var(--primary-dark);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
         .btn-success {
-            background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
+            background: var(--success);
             color: white;
-            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
         }
 
         .btn-success:hover {
-            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.4);
+            background: #059669;
             transform: translateY(-2px);
         }
 
         .btn-danger {
-            background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+            background: var(--danger);
             color: white;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
 
         .btn-danger:hover {
-            box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
-            transform: translateY(-2px);
+            background: #dc2626;
         }
 
         .btn-warning {
-            background: linear-gradient(135deg, var(--warning) 0%, #ea580c 100%);
+            background: var(--warning);
             color: white;
-            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
         }
 
         .btn:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
         }
@@ -557,17 +537,15 @@
 
         .order-card {
             background: white;
-            border: none;
+            border: 2px solid var(--border);
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 16px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
         }
 
         .order-card:hover {
-            box-shadow: 0 12px 28px rgba(16, 185, 129, 0.15);
-            transform: translateY(-4px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
         }
 
         .order-header {
@@ -575,7 +553,7 @@
             justify-content: space-between;
             align-items: center;
             padding-bottom: 15px;
-            border-bottom: 2px solid #d1fae5;
+            border-bottom: 2px solid var(--border);
             margin-bottom: 15px;
         }
 
@@ -593,7 +571,7 @@
         .order-total {
             font-size: 20px;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--danger);
         }
 
         .analytics-grid {
@@ -605,11 +583,10 @@
 
         .analytics-card {
             background: white;
-            border: none;
+            border: 2px solid var(--border);
             border-radius: 12px;
             padding: 20px;
             text-align: center;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
         }
 
         .analytics-value {
@@ -1039,71 +1016,26 @@
         </div>
 
         <div id="settings" class="tab-content">
-            <h3 style="margin-bottom: 15px;">� Cấu Hình Google Sheet</h3>
-            <div style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); margin-bottom: 30px;">
-                <div class="input-group">
-                    <label>Link CSV của Google Sheet</label>
-                    <input type="text" id="sheet-url-input" placeholder="Dán link CSV từ Google Sheet" 
-                        style="width: 100%; padding: 10px 12px; border: 2px solid #d1fae5; border-radius: 8px; font-size: 14px;">
-                </div>
-                <div style="display: flex; gap: 8px; margin-top: 12px;">
-                    <button class="btn btn-primary" onclick="saveSheetUrl()" style="flex: 1;">💾 Lưu Link</button>
-                    <button class="btn btn-success" onclick="loadProductsFromSheet()" style="flex: 1;">⬇️ Tải Sản Phẩm</button>
-                </div>
-                <div style="font-size: 12px; color: #64748b; margin-top: 12px; padding-top: 12px; border-top: 2px solid #e0f2fe;">
-                    <p style="margin-bottom: 8px;">ℹ️ Hướng dẫn:</p>
-                    <ol style="margin-left: 16px; line-height: 1.6;">
-                        <li>Mở Google Sheet của bạn</li>
-                        <li>Chọn File → Chia sẻ → Yêu cầu quyền truy cập (công khai)</li>
-                        <li>Copy link dạng: <code style="background: #f8fafc; padding: 2px 6px; border-radius: 4px;">https://docs.google.com/spreadsheets/d/e/...</code></li>
-                        <li>Dán link vào ô trên và nhấn "Lưu Link"</li>
-                    </ol>
-                </div>
-            </div>
-
-            <h3 style="margin-bottom: 15px;">�📏 Quản Lý Đơn Vị</h3>
+            <h3 style="margin-bottom: 15px;">📏 Quản Lý Đơn Vị</h3>
             <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;">
                 <input type="text" id="unit-search-input" placeholder="Tìm kiếm đơn vị..." 
-                    oninput="searchUnits()" style="flex: 1 1 200px; min-width: 0; padding: 8px; border: 2px solid #d1fae5; border-radius: 8px;">
+                    oninput="searchUnits()" style="flex: 1 1 200px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
             </div>
             <div id="units-list" style="margin-bottom: 8px;"></div>
             <div id="units-pagination" style="margin-bottom: 12px; text-align: center;"></div>
-            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px;">
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
                 <input type="text" id="new-unit-name" 
-                    style="flex: 1 1 130px; min-width: 0; padding: 8px; border: 2px solid #d1fae5; border-radius: 8px;">
+                    style="flex: 1 1 130px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                 <input type="number" id="new-unit-rate" step="0.01" 
-                    style="flex: 1 1 110px; min-width: 0; padding: 8px; border: 2px solid #d1fae5; border-radius: 8px;">
+                    style="flex: 1 1 110px; min-width: 0; padding: 8px; border: 2px solid var(--border); border-radius: 8px;">
                 <button class="btn btn-primary" onclick="addUnit()" 
                     style="flex: 0 0 auto; padding: 8px 14px; font-size: 13px;">➕ Thêm</button>
-            </div>
-
-            <h3 style="margin-bottom: 15px;">💾 Dung Lượng Lưu Trữ</h3>
-            <div style="background: white; border-radius: 12px; padding: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-                    <div>
-                        <div style="color: #64748b; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Sản Phẩm</div>
-                        <div id="storage-products" style="font-size: 18px; font-weight: 700; color: var(--primary);">0 KB</div>
-                    </div>
-                    <div>
-                        <div style="color: #64748b; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Đơn Hàng</div>
-                        <div id="storage-orders" style="font-size: 18px; font-weight: 700; color: #16a34a;">0 KB</div>
-                    </div>
-                    <div>
-                        <div style="color: #64748b; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Giỏ Hàng</div>
-                        <div id="storage-cart" style="font-size: 18px; font-weight: 700; color: #f59e0b;">0 KB</div>
-                    </div>
-                    <div>
-                        <div style="color: #64748b; font-size: 12px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;">Tổng</div>
-                        <div id="storage-total" style="font-size: 18px; font-weight: 700; color: #3b82f6;">0 KB</div>
-                    </div>
-                </div>
-                <button class="btn btn-danger" onclick="clearAllData()" style="width: 100%;">🗑️ Xóa Tất Cả Dữ Liệu</button>
             </div>
         </div>
     </div>
 
     <script>
-        let SHEET_URL = localStorage.getItem('sheetUrl') || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQoan7BE8OZRhivl2amxyW-jRgxROv5N2B_F98BkYaq1ZRv_tM3b_pJ_ktnZBsRarKJlf7xQIijJ5Y9/pub?output=csv';
+        const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQoan7BE8OZRhivl2amxyW-jRgxROv5N2B_F98BkYaq1ZRv_tM3b_pJ_ktnZBsRarKJlf7xQIijJ5Y9/pub?output=csv';
         
         let products = [];
         let cart = [];
@@ -1141,7 +1073,6 @@
             updateOrdersUI();
             updateUnitsUI();
             updateAnalytics();
-            updateStorageDisplay();
         };
 
         function loadProducts(force = false) {
@@ -1170,12 +1101,15 @@
                 if (!line.trim()) return null;
                 const parts = line.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
                 if (parts.length < 5) return null;
+                // Kiểm tra nếu cột available có chứa X, x, ✓, ✕ thì còn hàng
+                const statusStr = (parts[4] || '').toUpperCase();
+                const available = statusStr === 'X' || statusStr === '✓' || statusStr === '✕' || statusStr === 'TRUE';
                 return {
                     id: parts[0],
                     name: parts[1],
                     unit: parts[2] || 'kg',
                     price: parseFloat(parts[3]) || 0,
-                    available: parts[4].toUpperCase() === 'TRUE',
+                    available: available,
                     image: parts[5] || 'https://via.placeholder.com/300x180?text=No+Image'
                 };
             }).filter(Boolean);
@@ -1257,7 +1191,7 @@
                 <div class="product-card ${!p.available ? 'out-of-stock' : ''}">
                     <div class="product-content">
                         <div class="product-header">
-                            <div class="product-name">${p.name} <span style="color: #64748b; font-weight: 500; font-size: 13px;">(${productSalesCache[p.name] ? productSalesCache[p.name].toFixed(0) : 0}x)</span></div>
+                            <div class="product-name">${p.name}</div>
                             <span class="product-badge ${p.available ? 'badge-available' : 'badge-out'}">
                                 ${p.available ? '✓ Còn' : '✗ Hết'}
                             </span>
@@ -1681,64 +1615,6 @@
             updateUnitsUI();
         }
 
-        function getStorageSize(key) {
-            const item = localStorage.getItem(key);
-            if (!item) return 0;
-            return new Blob([item]).size;
-        }
-
-        function updateStorageDisplay() {
-            const productsSize = getStorageSize('products');
-            const ordersSize = getStorageSize('orders');
-            const cartSize = getStorageSize('cart');
-            const totalSize = productsSize + ordersSize + cartSize;
-
-            const formatSize = (bytes) => {
-                if (bytes === 0) return '0 KB';
-                const kb = (bytes / 1024).toFixed(2);
-                return kb + ' KB';
-            };
-
-            document.getElementById('storage-products').textContent = formatSize(productsSize);
-            document.getElementById('storage-orders').textContent = formatSize(ordersSize);
-            document.getElementById('storage-cart').textContent = formatSize(cartSize);
-            document.getElementById('storage-total').textContent = formatSize(totalSize);
-        }
-
-        function clearAllData() {
-            if (confirm('⚠️ Xác nhận xóa tất cả dữ liệu? Hành động này không thể hoàn tác!')) {
-                localStorage.clear();
-                products = [];
-                cart = [];
-                orders = [];
-                units = [...DEFAULT_UNITS];
-                productSalesCache = {};
-                SHEET_URL = localStorage.getItem('sheetUrl') || 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQoan7BE8OZRhivl2amxyW-jRgxROv5N2B_F98BkYaq1ZRv_tM3b_pJ_ktnZBsRarKJlf7xQIijJ5Y9/pub?output=csv';
-                saveToStorage();
-                displayProducts();
-                updateCartUI();
-                updateOrdersUI();
-                updateUnitsUI();
-                updateStorageDisplay();
-                showNotification('✅ Đã xóa tất cả dữ liệu!');
-            }
-        }
-
-        function saveSheetUrl() {
-            const url = document.getElementById('sheet-url-input').value.trim();
-            if (!url) {
-                showNotification('⚠️ Vui lòng nhập link Google Sheet!', true);
-                return;
-            }
-            localStorage.setItem('sheetUrl', url);
-            SHEET_URL = url;
-            showNotification('✅ Đã lưu link Google Sheet!');
-        }
-
-        function loadProductsFromSheet() {
-            loadProducts(true);
-        }
-
         function changeUnitsPage(page) {
             if (page < 1) return;
             currentUnitsPage = page;
@@ -1850,29 +1726,16 @@
             localStorage.setItem('units', JSON.stringify(units));
             localStorage.setItem('currentFilter', currentFilter);
             localStorage.setItem('analyticsRange', analyticsRange);
-            updateStorageDisplay();
         }
 
         function loadFromStorage() {
             try {
-                // Load Sheet URL
-                const savedSheetUrl = localStorage.getItem('sheetUrl');
-                if (savedSheetUrl) {
-                    SHEET_URL = savedSheetUrl;
-                }
-                
                 products = JSON.parse(localStorage.getItem('products') || '[]');
                 cart = JSON.parse(localStorage.getItem('cart') || '[]');
                 orders = JSON.parse(localStorage.getItem('orders') || '[]');
                 units = JSON.parse(localStorage.getItem('units') || JSON.stringify(DEFAULT_UNITS));
                 currentFilter = localStorage.getItem('currentFilter') || 'all';
                 analyticsRange = localStorage.getItem('analyticsRange') || 'today';
-                
-                // Update input field với saved URL
-                const sheetInput = document.getElementById('sheet-url-input');
-                if (sheetInput) {
-                    sheetInput.value = SHEET_URL;
-                }
 
                 // Chuẩn hóa đơn vị để tránh hiển thị 'undefined'
                 if (!Array.isArray(units) || units.length === 0) {
