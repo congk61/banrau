@@ -749,6 +749,191 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        .cart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            animation: fadeIn 0.3s;
+        }
+
+        .cart-modal.active {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .cart-modal-content {
+            width: 100%;
+            max-width: 450px;
+            height: 100vh;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .cart-modal-header {
+            padding: 16px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .cart-modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .cart-modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .cart-modal-close:hover {
+            transform: scale(1.1);
+        }
+
+        .cart-modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .cart-modal-item {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-modal-item-info {
+            flex: 1;
+        }
+
+        .cart-modal-item-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 14px;
+        }
+
+        .cart-modal-item-detail {
+            font-size: 12px;
+            color: #64748b;
+            margin-bottom: 2px;
+        }
+
+        .cart-modal-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cart-modal-item-actions button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px 8px;
+            transition: transform 0.2s;
+        }
+
+        .cart-modal-item-actions button:hover {
+            transform: scale(1.1);
+        }
+
+        .cart-modal-item-remove {
+            background: rgba(239,68,68,0.1);
+            color: var(--danger);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 12px;
+        }
+
+        .cart-modal-item-remove:hover {
+            background: rgba(239,68,68,0.2);
+        }
+
+        .cart-modal-footer {
+            padding: 16px;
+            border-top: 2px solid var(--border);
+            background: var(--light);
+        }
+
+        .cart-modal-summary {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .cart-modal-summary-label {
+            color: #64748b;
+        }
+
+        .cart-modal-total {
+            display: flex;
+            justify-content: space-between;
+            font-size: 20px;
+            font-weight: 700;
+            padding: 12px 0;
+            border-top: 2px solid white;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .cart-modal-empty {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .cart-modal-empty-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .cart-modal-content {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1233,6 +1418,9 @@
             document.getElementById('summary-total').textContent = formatMoney(total);
             document.getElementById('floating-cart-count').textContent = cart.length;
             document.getElementById('floating-cart-total').textContent = formatMoney(total);
+            
+            // Cập nhật modal nếu đang mở
+            updateCartModalSummary();
         }
 
         function updateCartItem(index, type, value) {
@@ -1421,7 +1609,11 @@
             
             const today = new Date().toLocaleDateString('vi-VN').trim();
             const todayRevenue = orders
-                .filter(o => ((o.date || '').split(',')[0] || '').trim() === today)
+                .filter(o => {
+                    // Parse ngày từ format "15/1/2026, 10:30:45" lấy "15/1/2026"
+                    const orderDate = (o.date || '').split(',')[0].trim();
+                    return orderDate === today;
+                })
                 .reduce((sum, o) => sum + o.total, 0);
             
             const productSales = {};
@@ -1445,27 +1637,6 @@
             
             document.getElementById('today-revenue').textContent = formatMoney(todayRevenue);
             document.getElementById('total-orders').textContent = totalOrders;
-
-            // Cập nhật danh sách top sản phẩm bán chạy ở tab sản phẩm
-            const topContainer = document.getElementById('top-products');
-            if (topContainer) {
-                if (!sortedTop.length) {
-                    topContainer.innerHTML = '';
-                } else {
-                    const listHtml = sortedTop.slice(0, 5).map(([name, qty], idx) => `
-                        <div style="display:flex; justify-content:space-between; font-size:13px; padding:3px 0;">
-                            <span>${idx + 1}. ${name}</span>
-                            <span style="opacity:0.8;">${qty.toFixed(2)}</span>
-                        </div>
-                    `).join('');
-                    topContainer.innerHTML = `
-                        <div style="border:1px dashed var(--border); border-radius:10px; padding:8px 10px; background:#f8fafc;">
-                            <div style="font-size:13px; font-weight:600; margin-bottom:4px;">🔥 Top sản phẩm bán chạy</div>
-                            ${listHtml}
-                        </div>
-                    `;
-                }
-            }
         }
 
         function updateUnitsUI() {
@@ -1595,7 +1766,7 @@
         }
 
         function openCart() {
-            switchTab('cart', document.querySelectorAll('.tab')[1]);
+            openCartModal();
         }
 
         function switchTab(tabName, button) {
@@ -1692,10 +1863,95 @@
                         unit: it && it.unit ? it.unit : 'kg'
                     }))
                 }));
+                
+                // Cập nhật thống kê
+                updateAnalytics();
             } catch (e) {
                 console.error('Storage error:', e);
             }
         }
     </script>
-</body>
+    <!-- Modal Giỏ Hàng Nhanh -->
+    <div id="cart-modal" class="cart-modal">
+        <div class="cart-modal-content">
+            <div class="cart-modal-header">
+                <h3>🛒 Giỏ Hàng</h3>
+                <button class="cart-modal-close" onclick="closeCartModal()">✕</button>
+            </div>
+            <div class="cart-modal-body" id="cart-modal-body">
+                <div class="cart-modal-empty">
+                    <div class="cart-modal-empty-icon">🛒</div>
+                    <h4>Giỏ hàng trống</h4>
+                </div>
+            </div>
+            <div class="cart-modal-footer">
+                <div class="cart-modal-summary">
+                    <span class="cart-modal-summary-label">Số lượng:</span>
+                    <span id="cart-modal-count">0</span>
+                </div>
+                <div class="cart-modal-total">
+                    <span>Tổng:</span>
+                    <span id="cart-modal-total">0đ</span>
+                </div>
+                <button class="btn btn-success" onclick="checkout()" style="width: 100%; padding: 12px; margin-bottom: 8px;">
+                    ✅ Thanh Toán
+                </button>
+                <button class="btn btn-danger" onclick="closeCartModal()" style="width: 100%; padding: 12px;">
+                    Đóng
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openCartModal() {
+            const modal = document.getElementById('cart-modal');
+            const body = document.getElementById('cart-modal-body');
+            
+            if (cart.length === 0) {
+                body.innerHTML = `
+                    <div class="cart-modal-empty">
+                        <div class="cart-modal-empty-icon">🛒</div>
+                        <h4>Giỏ hàng trống</h4>
+                        <p style="margin-top: 10px; font-size: 13px; color: #94a3b8;">Thêm sản phẩm để bắt đầu bán hàng</p>
+                    </div>
+                `;
+            } else {
+                body.innerHTML = cart.map((item, idx) => `
+                    <div class="cart-modal-item">
+                        <div class="cart-modal-item-info">
+                            <div class="cart-modal-item-name">${item.name}</div>
+                            <div class="cart-modal-item-detail">Số lượng: <strong>${item.quantity.toFixed(2)}</strong> ${item.unit}</div>
+                            <div class="cart-modal-item-detail">Đơn giá: <strong>${formatMoney(item.unitPrice)}</strong>đ</div>
+                            <div class="cart-modal-item-detail">Thành tiền: <strong style="color: var(--primary);">${formatMoney(item.totalPrice)}</strong>đ</div>
+                        </div>
+                        <button class="cart-modal-item-remove" onclick="removeFromCart(${idx})">Xóa</button>
+                    </div>
+                `).join('');
+            }
+            
+            updateCartModalSummary();
+            modal.classList.add('active');
+        }
+
+        function closeCartModal() {
+            document.getElementById('cart-modal').classList.remove('active');
+        }
+
+        // Đóng modal khi bấm ngoài
+        document.getElementById('cart-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'cart-modal') {
+                closeCartModal();
+            }
+        });
+
+        function updateCartModalSummary() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const totalAmount = cart.reduce((sum, item) => sum + item.totalPrice, 0);
+            
+            document.getElementById('cart-modal-count').textContent = cart.length + ' sản phẩm';
+            document.getElementById('cart-modal-total').textContent = formatMoney(totalAmount) + 'đ';
+        }
+    </script>
+
 </html>
