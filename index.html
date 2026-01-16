@@ -935,6 +935,139 @@
             margin-bottom: 12px;
         }
 
+        /* Modal Form Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #16a34a 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            background: var(--light);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            border-top: 2px solid var(--border);
+        }
+
+        .modal-footer button {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
         @media (max-width: 768px) {
             .cart-modal-content {
                 max-width: 100%;
@@ -974,7 +1107,10 @@
                     <button class="filter-btn" onclick="filterProducts('out')">Hết hàng</button>
                 </div>
             </div>
-            <button class="btn btn-warning" onclick="loadProducts(true)" style="margin-bottom: 15px;">🔄 Đồng bộ dữ liệu</button>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                <button class="btn btn-warning" onclick="loadProducts(true)">🔄 Đồng bộ dữ liệu</button>
+                <button class="btn btn-success" onclick="openAddProductModal()">➕ Thêm Sản Phẩm</button>
+            </div>
             <div id="top-products" style="margin-bottom: 10px;"></div>
             <div id="products-list" class="product-grid"></div>
             <div id="products-pagination" style="margin-top: 12px; text-align: center;"></div>
@@ -1041,6 +1177,28 @@
                     style="margin-top: 12px; width: 100%;">💾 Lưu & Tải lại Dữ Liệu</button>
             </div>
 
+            <!-- Google Apps Script Settings -->
+            <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 2px solid #dbeafe;">
+                <h3 style="margin-bottom: 12px; color: var(--info);">🔗 Google Apps Script URL (Để cập nhật tự động)</h3>
+                <div class="input-group">
+                    <label>Deployment URL từ Google Apps Script</label>
+                    <input type="text" id="apps-script-url-input" placeholder="Nhập URL deployment..." 
+                        style="width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 8px;">
+                </div>
+                <div style="font-size: 13px; color: #64748b; margin-top: 10px; line-height: 1.6;">
+                    <strong>📖 Hướng dẫn cài đặt Apps Script:</strong><br>
+                    1. Mở Google Sheet → Tools → Script Editor<br>
+                    2. Sao chép code từ file <code style="background: var(--light); padding: 2px 6px; border-radius: 4px;">GOOGLE_APPS_SCRIPT_CODE.js</code><br>
+                    3. Deploy → New deployment → Type: Web app<br>
+                    4. Execute as: Chính bạn, Access: Anyone with the link<br>
+                    5. Copy URL deployment vào ô này<br>
+                    <br>
+                    📚 Xem file <code style="background: var(--light); padding: 2px 6px; border-radius: 4px;">HUONG_DAN_CAI_DAT.md</code> hoặc <code style="background: var(--light); padding: 2px 6px; border-radius: 4px;">QUICK_START.md</code> để hướng dẫn chi tiết!
+                </div>
+                <button class="btn btn-primary" onclick="saveAppsScriptUrl()" 
+                    style="margin-top: 12px; width: 100%;">💾 Lưu URL Apps Script</button>
+            </div>
+
             <!-- Storage Management -->
             <div style="background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(34, 197, 94, 0.05) 100%); padding: 20px; border-radius: 14px; margin-bottom: 25px; border: 2px solid #dbeafe;">
                 <h3 style="margin-bottom: 12px; color: var(--info);">💾 Quản Lý Bộ Nhớ</h3>
@@ -1085,6 +1243,50 @@
         </div>
     </div>
 
+    <!-- Modal Thêm/Sửa Sản Phẩm -->
+    <div id="product-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">➕ Thêm Sản Phẩm Mới</h2>
+                <button class="modal-close" onclick="closeProductModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>ID Sản Phẩm *</label>
+                    <input type="text" id="form-product-id" placeholder="Nhập ID (ví dụ: SP001)" required>
+                </div>
+                <div class="form-group">
+                    <label>Tên Sản Phẩm *</label>
+                    <input type="text" id="form-product-name" placeholder="Nhập tên sản phẩm" required>
+                </div>
+                <div class="form-group">
+                    <label>Đơn Vị *</label>
+                    <select id="form-product-unit" required>
+                        <option value="">-- Chọn đơn vị --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Giá (đ) *</label>
+                    <input type="number" id="form-product-price" placeholder="Nhập giá" step="1000" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Hình Ảnh URL</label>
+                    <input type="url" id="form-product-image" placeholder="Nhập URL hình ảnh">
+                </div>
+                <div class="form-group">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="form-product-available" checked>
+                        <label style="margin: 0;">✓ Còn hàng</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="closeProductModal()">Hủy</button>
+                <button class="btn btn-success" onclick="saveProductToSheet()">💾 Lưu</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const DEFAULT_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQoan7BE8OZRhivl2amxyW-jRgxROv5N2B_F98BkYaq1ZRv_tM3b_pJ_ktnZBsRarKJlf7xQIijJ5Y9/pub?output=csv';
         let SHEET_URL = DEFAULT_SHEET_URL;
@@ -1098,6 +1300,8 @@
         let currentProductsPage = 1;
         let currentOrdersPage = 1;
         let currentUnitsPage = 1;
+        let currentEditingProductId = null; // Để lưu ID sản phẩm đang sửa
+        let GOOGLE_APPS_SCRIPT_URL = ''; // Sẽ được cập nhật từ settings
         let productSearchTerm = '';
         let orderSearchTerm = '';
         let unitSearchTerm = '';
@@ -1285,6 +1489,16 @@
                             style="width: 100%; margin-top: 10px;" ${!p.available ? 'disabled' : ''}>
                             🛒 Thêm vào giỏ
                         </button>
+                        <div style="display: flex; gap: 8px; margin-top: 8px;">
+                            <button class="btn btn-info" onclick="openEditProductModal('${p.id}')" 
+                                style="flex: 1; background: #3b82f6;">
+                                ✏️ Sửa
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteProductFromSheet('${p.id}')" 
+                                style="flex: 1;">
+                                🗑️ Xóa
+                            </button>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -1845,6 +2059,13 @@
                 SHEET_URL = DEFAULT_SHEET_URL;
                 document.getElementById('sheet-url-input').value = DEFAULT_SHEET_URL;
             }
+            
+            // Load Google Apps Script URL
+            const appsScriptUrl = localStorage.getItem('appsScriptUrl');
+            if (appsScriptUrl) {
+                GOOGLE_APPS_SCRIPT_URL = appsScriptUrl;
+                document.getElementById('apps-script-url-input').value = appsScriptUrl;
+            }
         }
 
         function saveSheetUrl() {
@@ -1861,6 +2082,19 @@
             
             // Tải lại dữ liệu từ sheet mới
             loadProducts(true);
+        }
+
+        function saveAppsScriptUrl() {
+            const url = document.getElementById('apps-script-url-input').value.trim();
+            if (!url) {
+                showNotification('⚠️ Vui lòng nhập URL Google Apps Script!', true);
+                return;
+            }
+            
+            localStorage.setItem('appsScriptUrl', url);
+            GOOGLE_APPS_SCRIPT_URL = url;
+            
+            showNotification('✅ Đã lưu URL Apps Script! Bây giờ thêm/sửa sản phẩm sẽ tự động cập nhật lên Google Sheets.');
         }
 
         function getStorageSize(key) {
@@ -1916,6 +2150,215 @@
                 displayProducts();
                 
                 showNotification('🗑️ Đã xóa toàn bộ dữ liệu!');
+            }
+        }
+
+        // ===== FUNCTIONS FOR ADD/EDIT PRODUCTS =====
+        
+        function openAddProductModal() {
+            currentEditingProductId = null;
+            document.getElementById('modal-title').textContent = '➕ Thêm Sản Phẩm Mới';
+            
+            // Xóa thông tin form cũ
+            document.getElementById('form-product-id').value = '';
+            document.getElementById('form-product-name').value = '';
+            document.getElementById('form-product-price').value = '';
+            document.getElementById('form-product-image').value = '';
+            document.getElementById('form-product-available').checked = true;
+            
+            // Cập nhật dropdown đơn vị
+            updateUnitDropdown();
+            
+            // Mở modal
+            document.getElementById('product-modal').classList.add('active');
+        }
+
+        function openEditProductModal(productId) {
+            currentEditingProductId = productId;
+            const product = products.find(p => p.id === productId);
+            
+            if (!product) {
+                showNotification('❌ Không tìm thấy sản phẩm!', true);
+                return;
+            }
+            
+            document.getElementById('modal-title').textContent = '✏️ Sửa Sản Phẩm';
+            
+            // Điền thông tin sản phẩm vào form
+            document.getElementById('form-product-id').value = product.id;
+            document.getElementById('form-product-id').disabled = true; // Không sửa ID
+            document.getElementById('form-product-name').value = product.name;
+            document.getElementById('form-product-unit').value = product.unit;
+            document.getElementById('form-product-price').value = product.price;
+            document.getElementById('form-product-image').value = product.image || '';
+            document.getElementById('form-product-available').checked = product.available;
+            
+            // Cập nhật dropdown đơn vị
+            updateUnitDropdown();
+            
+            // Mở modal
+            document.getElementById('product-modal').classList.add('active');
+        }
+
+        function closeProductModal() {
+            document.getElementById('product-modal').classList.remove('active');
+            document.getElementById('form-product-id').disabled = false;
+            currentEditingProductId = null;
+        }
+
+        function updateUnitDropdown() {
+            const select = document.getElementById('form-product-unit');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">-- Chọn đơn vị --</option>' + 
+                units.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+            select.value = currentValue;
+        }
+
+        // Đóng modal khi bấm ngoài
+        document.addEventListener('click', (e) => {
+            const modal = document.getElementById('product-modal');
+            if (modal && e.target === modal) {
+                closeProductModal();
+            }
+        });
+
+        async function saveProductToSheet() {
+            const id = document.getElementById('form-product-id').value.trim();
+            const name = document.getElementById('form-product-name').value.trim();
+            const unit = document.getElementById('form-product-unit').value;
+            const price = parseFloat(document.getElementById('form-product-price').value) || 0;
+            const image = document.getElementById('form-product-image').value.trim() || 'https://via.placeholder.com/300x180?text=No+Image';
+            const available = document.getElementById('form-product-available').checked;
+            
+            // Validation
+            if (!id || !name || !unit || price <= 0) {
+                showNotification('⚠️ Vui lòng điền đầy đủ thông tin (ID, tên, đơn vị, giá > 0)!', true);
+                return;
+            }
+            
+            // Kiểm tra trùng ID nếu thêm mới
+            if (!currentEditingProductId && products.some(p => p.id === id)) {
+                showNotification('⚠️ ID sản phẩm đã tồn tại!', true);
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                if (currentEditingProductId) {
+                    // Sửa sản phẩm
+                    const productIndex = products.findIndex(p => p.id === currentEditingProductId);
+                    if (productIndex >= 0) {
+                        products[productIndex] = { id, name, unit, price, image, available };
+                    }
+                    
+                    // Cập nhật lên Google Sheet
+                    await updateProductOnGoogleSheet(id, name, unit, price, available, image);
+                    
+                    showNotification('✅ Đã sửa sản phẩm thành công!');
+                } else {
+                    // Thêm sản phẩm mới
+                    products.push({ id, name, unit, price, image, available });
+                    
+                    // Cập nhật lên Google Sheet
+                    await addProductToGoogleSheet(id, name, unit, price, available, image);
+                    
+                    showNotification('✅ Đã thêm sản phẩm thành công!');
+                }
+                
+                saveToStorage();
+                filterProducts(currentFilter);
+                closeProductModal();
+                
+            } catch (err) {
+                console.error(err);
+                showNotification('❌ Lỗi: ' + err.message, true);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function addProductToGoogleSheet(id, name, unit, price, available, image) {
+            // Tạo dòng CSV mới
+            const statusStr = available ? 'X' : '';
+            const csvLine = [id, name, unit, price, statusStr, image].map(val => {
+                // Escape quotes and wrap in quotes nếu có comma
+                const str = String(val).replace(/"/g, '""');
+                return str.includes(',') ? `"${str}"` : str;
+            }).join(',');
+            
+            // Cập nhật local products
+            const newProduct = { id, name, unit, price, image, available };
+            
+            // Nếu sử dụng Google Apps Script URL
+            if (GOOGLE_APPS_SCRIPT_URL) {
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'addProduct',
+                        data: [id, name, unit, price, statusStr, image]
+                    })
+                });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error || 'Lỗi cập nhật');
+            }
+            
+            console.log('Sản phẩm mới được thêm:', csvLine);
+        }
+
+        async function updateProductOnGoogleSheet(id, name, unit, price, available, image) {
+            // Cập nhật local products
+            const statusStr = available ? 'X' : '';
+            
+            // Nếu sử dụng Google Apps Script URL
+            if (GOOGLE_APPS_SCRIPT_URL) {
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'updateProduct',
+                        productId: id,
+                        data: [id, name, unit, price, statusStr, image]
+                    })
+                });
+                const result = await response.json();
+                if (!result.success) throw new Error(result.error || 'Lỗi cập nhật');
+            }
+            
+            console.log('Sản phẩm được cập nhật:', id, name, unit, price);
+        }
+
+        async function deleteProductFromSheet(productId) {
+            if (!confirm('⚠️ Xóa sản phẩm này? Hành động không thể hoàn tác!')) return;
+            
+            showLoading(true);
+            try {
+                products = products.filter(p => p.id !== productId);
+                
+                // Nếu sử dụng Google Apps Script URL
+                if (GOOGLE_APPS_SCRIPT_URL) {
+                    const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'deleteProduct',
+                            productId: productId
+                        })
+                    });
+                    const result = await response.json();
+                    if (!result.success) throw new Error(result.error || 'Lỗi xóa');
+                }
+                
+                saveToStorage();
+                filterProducts(currentFilter);
+                showNotification('✅ Đã xóa sản phẩm thành công!');
+                
+            } catch (err) {
+                console.error(err);
+                showNotification('❌ Lỗi: ' + err.message, true);
+            } finally {
+                showLoading(false);
             }
         }
     </script>
